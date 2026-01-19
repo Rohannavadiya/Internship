@@ -4,7 +4,6 @@
     <title>Expense Form</title>
 </head>
 <body>
-
 <form action="submit/expense_insert.php" method="POST">
 
     Date: <input type="date" name="expense_date" required><br><br>
