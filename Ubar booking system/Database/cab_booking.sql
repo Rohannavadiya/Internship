@@ -3,13 +3,14 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 16, 2026 at 04:41 AM
+-- Generation Time: Jan 17, 2026 at 06:28 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -49,8 +50,16 @@ CREATE TABLE `bookings` (
   `distance_km` decimal(6,2) NOT NULL,
   `fare` decimal(10,2) NOT NULL,
   `status` enum('requested','accepted','ongoing','completed','cancelled') DEFAULT 'requested',
-  `booking_time` timestamp NOT NULL DEFAULT current_timestamp()
+  `booking_time` timestamp NOT NULL DEFAULT current_timestamp(),
+  `cancel_reason` varchar(200) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `bookings`
+--
+
+INSERT INTO `bookings` (`id`, `user_id`, `driver_id`, `pickup_location`, `drop_location`, `distance_km`, `fare`, `status`, `booking_time`, `cancel_reason`) VALUES
+(1, 1, NULL, 'Bhavnagar', 'sirat', 300.00, 3600.00, 'requested', '2026-01-17 04:53:23', NULL);
 
 -- --------------------------------------------------------
 
@@ -112,25 +121,6 @@ CREATE TABLE `ratings` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `rides`
---
-
-CREATE TABLE `rides` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `driver_id` int(11) DEFAULT NULL,
-  `pickup_location` varchar(255) NOT NULL,
-  `drop_location` varchar(255) NOT NULL,
-  `vehicle_type` enum('Mini','Sedan','SUV') NOT NULL,
-  `distance_km` decimal(5,2) DEFAULT 0.00,
-  `fare` decimal(10,2) DEFAULT 0.00,
-  `status` enum('requested','accepted','ongoing','completed','cancelled') DEFAULT 'requested',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `users`
 --
 
@@ -170,14 +160,16 @@ ALTER TABLE `admins`
 ALTER TABLE `bookings`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`),
-  ADD KEY `driver_id` (`driver_id`);
+  ADD KEY `driver_id` (`driver_id`),
+  ADD KEY `status` (`status`);
 
 --
 -- Indexes for table `drivers`
 --
 ALTER TABLE `drivers`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `mobile` (`mobile`);
 
 --
 -- Indexes for table `payments`
@@ -196,17 +188,12 @@ ALTER TABLE `ratings`
   ADD KEY `driver_id` (`driver_id`);
 
 --
--- Indexes for table `rides`
---
-ALTER TABLE `rides`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `mobile` (`mobile`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -222,7 +209,7 @@ ALTER TABLE `admins`
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `drivers`
@@ -240,12 +227,6 @@ ALTER TABLE `payments`
 -- AUTO_INCREMENT for table `ratings`
 --
 ALTER TABLE `ratings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `rides`
---
-ALTER TABLE `rides`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --

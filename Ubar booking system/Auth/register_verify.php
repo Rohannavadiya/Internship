@@ -39,13 +39,15 @@ if ($role === 'user') {
 
         echo "<script>alert('User registration successfully');window.location='login.php';</script>";
         exit;
+
     } else {
         echo "<script>alert('User registration failed');window.location='register.php';</script>";
         exit;
     }
 }
 
-/* ================= DRIVER REGISTRATION ================= */ elseif ($role === 'driver') {
+/* ================= DRIVER REGISTRATION ================= */
+elseif ($role === 'driver') {
 
     $license = trim($_POST['license']);
     $vehicle = trim($_POST['vehicle_type']);
@@ -72,13 +74,16 @@ if ($role === 'user') {
 
         echo "<script>alert('Driver registration successfully');window.location='login.php';</script>";
         exit;
+
     } else {
         echo "<script>alert('Driver registration failed');window.location='register.php?role=driver';</script>";
         exit;
     }
 }
 
-/* ================= INVALID ROLE ================= */ else {
+/* ================= INVALID ROLE ================= */
+else {
     echo "<script>alert('Invalid registration attempt');window.location='register.php';</script>";
     exit;
 }
+?>

@@ -1,12 +1,11 @@
 <?php
 session_start();
-require_once('../Config/db.php');
+require_once('../config/db.php');
 
 /* Get form data safely */
 $mail = $_POST['mail'];
 $pass = $_POST['pass'];
 $selected_role = $_POST['role']; // user OR driver
-
 
 /* ================= USER LOGIN ================= */
 if ($selected_role === 'user') {
@@ -25,7 +24,7 @@ if ($selected_role === 'user') {
             $_SESSION['user_type'] = 'user';
             $_SESSION['user_name'] = $row['full_name'];
 
-            header("Location: ../User/user_dashboard.php");
+            header("Location: ../User/dashboard.php");
             exit;
         } else {
             echo "<script>alert('Invalid password');window.location='login.php';</script>";
@@ -51,7 +50,7 @@ if ($selected_role === 'user') {
             $_SESSION['user_type'] = 'driver';
             $_SESSION['user_name'] = $row['full_name'];
 
-            header("Location: ../Driver/driver_dashboard.php");
+            header("Location: ../Driver/dashboard.php");
             exit;
         } else {
             echo "<script>alert('Invalid password');

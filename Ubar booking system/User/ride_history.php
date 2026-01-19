@@ -1,9 +1,19 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] !== 'user') {
+include("../config/db.php");
+
+/* ✅ Uncomment after login system ready
+if(!isset($_SESSION['user_id'])){
     header("Location: ../auth/login.php");
-    exit;
+    exit();
 }
+*/
+
+$user_id = $_SESSION['user_id'] ?? 1; // demo
+
+// Fetch user bookings
+$sql = "SELECT * FROM bookings WHERE user_id='$user_id' ORDER BY id DESC";
+$result = mysqli_query($link, $sql);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -13,8 +23,7 @@ if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] !== 'user') {
     <title>Ride History | CabRide</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         * {
@@ -26,173 +35,156 @@ if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] !== 'user') {
 
         body {
             background: #f9fafb;
+            color: #111827;
         }
 
-        /* Sidebar */
-        .sidebar {
-            width: 220px;
-            height: 100vh;
-            position: fixed;
-            background: #fff;
-            border-right: 1px solid #e5e7eb;
-            padding: 20px;
+        .container {
+            max-width: 1150px;
+            margin: auto;
+            padding: 30px 18px;
         }
 
-        .sidebar h2 {
-            text-align: center;
-            color: #facc15;
-            margin-bottom: 30px;
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
         }
 
-        .sidebar a {
-            display: block;
-            padding: 12px;
-            border-radius: 8px;
-            color: #374151;
+        .header h2 {
+            font-size: 24px;
+        }
+
+        .header a {
             text-decoration: none;
-            margin-bottom: 10px;
-        }
-
-        .sidebar a i {
-            margin-right: 10px;
-            color: #facc15;
-        }
-
-        .sidebar a:hover {
             background: #facc15;
             color: #000;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 600;
         }
 
-        /* Main */
-        .main {
-            margin-left: 220px;
-            padding: 25px;
-        }
-
-        /* Header */
-        .header {
-            background: #fff;
-            padding: 15px 20px;
-            border-radius: 15px;
-            display: flex;
-            justify-content: space-between;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        }
-
-        /* Card */
         .card {
-            margin-top: 25px;
             background: #fff;
-            padding: 20px;
+            padding: 18px;
             border-radius: 18px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f1f5f9;
+            overflow: auto;
         }
 
-        /* Table */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            min-width: 900px;
         }
 
         th,
         td {
-            padding: 12px;
+            padding: 12px 10px;
             text-align: left;
-            border-bottom: 1px solid #e5e7eb;
             font-size: 14px;
         }
 
         th {
-            background: #facc15;
-            color: #000;
+            background: #f9fafb;
+            color: #6b7280;
+            border-bottom: 1px solid #e5e7eb;
         }
 
-        .status-completed {
-            color: #16a34a;
+        td {
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .requested {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .accepted {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .ongoing {
+            background: #fefce8;
+            color: #a16207;
+        }
+
+        .completed {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .cancelled {
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 25px;
+            color: #6b7280;
             font-weight: 600;
-        }
-
-        .status-cancelled {
-            color: #dc2626;
-            font-weight: 600;
-        }
-
-        /* Responsive */
-        @media(max-width:768px) {
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-            }
-
-            .main {
-                margin-left: 0;
-            }
         }
     </style>
 </head>
 
 <body>
 
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <h2>User</h2>
-        <a href="user_dashboard.php"><i class="fa fa-home"></i>Dashboard</a>
-        <a href="book_ride.php"><i class="fa fa-car"></i>Book Ride</a>
-        <a href="ride_history.php"><i class="fa fa-history"></i>Ride History</a>
-        <a href="profile.php"><i class="fa fa-user"></i>Profile</a>
-        <a href="../auth/logout.php"><i class="fa fa-sign-out-alt"></i>Logout</a>
-    </div>
+    <div class="container">
 
-    <!-- MAIN -->
-    <div class="main">
-
-        <!-- HEADER -->
         <div class="header">
-            <h3>Ride History</h3>
-            <span>Hello, <?php echo $_SESSION['user_name'] ?? 'User'; ?></span>
+            <h2>📜 Ride History</h2>
+            <a href="dashboard.php">⬅ Back</a>
         </div>
 
-        <!-- HISTORY CARD -->
         <div class="card">
-            <h3>Your Past Rides</h3>
-
             <table>
                 <thead>
                     <tr>
-                        <th>Date</th>
+                        <th>#</th>
                         <th>Pickup</th>
                         <th>Drop</th>
+                        <th>Distance</th>
                         <th>Fare</th>
                         <th>Status</th>
+                        <th>Booking Time</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>12 Jan 2026</td>
-                        <td>City Mall</td>
-                        <td>Airport</td>
-                        <td>₹450</td>
-                        <td class="status-completed">Completed</td>
-                    </tr>
-                    <tr>
-                        <td>08 Jan 2026</td>
-                        <td>Railway Station</td>
-                        <td>Home</td>
-                        <td>₹220</td>
-                        <td class="status-completed">Completed</td>
-                    </tr>
-                    <tr>
-                        <td>05 Jan 2026</td>
-                        <td>Office</td>
-                        <td>Market</td>
-                        <td>₹180</td>
-                        <td class="status-cancelled">Cancelled</td>
-                    </tr>
+
+                    <?php
+                    if (mysqli_num_rows($result) > 0) {
+                        $i = 1;
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            $status = $row['status'];
+
+                            echo "<tr>";
+                            echo "<td>" . $i++ . "</td>";
+                            echo "<td>" . htmlspecialchars($row['pickup_location']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['drop_location']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['distance_km']) . " km</td>";
+                            echo "<td>₹" . htmlspecialchars($row['fare']) . "</td>";
+                            echo "<td><span class='badge " . $status . "'>" . ucfirst($status) . "</span></td>";
+                            echo "<td>" . htmlspecialchars($row['booking_time']) . "</td>";
+                            echo "</tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='7' class='no-data'>❌ No rides found! Book your first ride 🚖</td></tr>";
+                    }
+                    ?>
+
                 </tbody>
             </table>
-
         </div>
 
     </div>
