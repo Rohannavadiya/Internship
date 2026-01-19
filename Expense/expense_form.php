@@ -10,7 +10,7 @@
 
     Amount: <input type="number" name="amount" required><br><br>
 
-    Category:
+    Category
     <input type="text" name="category" required><br><br>
 
     Expense Type:
