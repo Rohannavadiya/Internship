@@ -306,7 +306,7 @@ table tr:hover {
 .table-wrapper-account {
   overflow-x: auto;
 }
-.user a{
+.user a {
   color: #1500ff;
   text-decoration: underline;
 }

@@ -7,7 +7,6 @@
     <title>Add user</title>
     <link rel="stylesheet" href="ins/Style.css">
 </head>
-
 <body>
     <div class="content-index">
         <div class="box-index">

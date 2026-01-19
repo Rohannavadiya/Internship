@@ -7,6 +7,7 @@ $mail = $_POST['mail'];
 $pass = $_POST['pass'];
 $selected_role = $_POST['role']; // user OR driver
 
+
 /* ================= USER LOGIN ================= */
 if ($selected_role === 'user') {
 

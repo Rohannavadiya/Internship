@@ -17,6 +17,7 @@ if (isset($_SESSION['user_type']) == false) {
 <?php } ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,6 +40,7 @@ if (isset($_SESSION['user_type']) == false) {
     $result = mysqli_query($link, $sql) or die(mysqli_error($link));
     ?>
 </head>
+
 <body>
     <div class="sidebar">
         <h2>Dashboard</h2>
@@ -137,4 +139,5 @@ if (isset($_SESSION['user_type']) == false) {
         </div>
     </div>
 </body>
+
 </html>

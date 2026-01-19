@@ -9,6 +9,7 @@ if (isset($_SESSION['user_type']) == false) {
 <?php } else if ($_SESSION['user_type'] == "user") {
     session_unset();
     session_destroy();
+    
 ?>
     <script>
         alert("Admin Login required!");

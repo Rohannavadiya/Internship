@@ -14,6 +14,7 @@ if (isset($_SESSION['user_type']) == false) {
         alert("User Login required!");
         window.location.href = "../index.php";
     </script>
+    
 <?php }
 session_unset();
 session_destroy();

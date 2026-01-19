@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>View Expenses</title>
-
     <?php
         require_once('ins/connection.php');
         $sql = "SELECT * FROM expenses";

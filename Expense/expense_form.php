@@ -5,7 +5,6 @@
 </head>
 <body>
 <form action="submit/expense_insert.php" method="POST">
-
     Date: <input type="date" name="expense_date" required><br><br>
 
     Amount: <input type="number" name="amount" required><br><br>

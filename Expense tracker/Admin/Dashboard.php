@@ -58,7 +58,7 @@ if (isset($_SESSION['user_type']) == false) {
                 </a>
                 <a href="master_account_add.php">
                     <div class="card">
-                       <i class="fa-solid fa-landmark"></i>
+                        <i class="fa-solid fa-landmark"></i>
                         <span>Add Master Account</span>
                     </div>
                 </a>

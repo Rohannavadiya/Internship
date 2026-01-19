@@ -2,11 +2,11 @@
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
     require_once('../../ins/connection.php');
     extract($_POST);
-    $psaa_hash=password_hash($pass,PASSWORD_DEFAULT);
-    $sql="INSERT INTO users(name, email,password) VALUES ('$name','$email','$psaa_hash')";
+    $psaa_hash = password_hash($pass, PASSWORD_DEFAULT);
+    $sql = "INSERT INTO users(name, email,password) VALUES ('$name','$email','$psaa_hash')";
     $result = mysqli_query($link, $sql) or die(mysqli_error($link));
 ?>
-<script>
+    <script>
         alert("User insert successfully!");
         window.location.href = "../user_register.php";
     </script>

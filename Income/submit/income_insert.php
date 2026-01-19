@@ -12,5 +12,5 @@ mysqli_query($link, $sql) or die(mysqli_error($link));
 
 <script>
     alert("Income inserted successfully");
-    window.location.href="../income_form.php";
+    window.location.href = "../income_form.php";
 </script>

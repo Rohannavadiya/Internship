@@ -17,17 +17,19 @@ if (isset($_SESSION['user_type']) == false) {
 <?php } ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Income</title>
     <link rel="stylesheet" href="../ins/Style.css">
     <?php
-        require_once('../ins/connection.php');
-        $sql="select bank_account_number from master_account where acc_group='Income'";
-        $result=mysqli_query($link, $sql) or die(mysqli_error($link));
+    require_once('../ins/connection.php');
+    $sql = "select bank_account_number from master_account where acc_group='Income'";
+    $result = mysqli_query($link, $sql) or die(mysqli_error($link));
     ?>
 </head>
+
 <body>
     <div class="sidebar">
         <h2>Dashboard</h2>
@@ -56,14 +58,14 @@ if (isset($_SESSION['user_type']) == false) {
                     <div class="form-group">
                         <label>Account Number</label>
                         <select name="sourse">
-                            <?php 
-                                while($row=mysqli_fetch_assoc($result)){
-                                    extract($row);
+                            <?php
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                extract($row);
                             ?>
-                            <option><?= $bank_account_number ?></option>
+                                <option><?= $bank_account_number ?></option>
                             <?php } ?>
                         </select>
-                        
+
                     </div>
                     <div class="form-group">
                         <label>Amount</label>
@@ -134,4 +136,5 @@ if (isset($_SESSION['user_type']) == false) {
         }
     }
 </script>
+
 </html>

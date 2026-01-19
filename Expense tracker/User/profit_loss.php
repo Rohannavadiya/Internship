@@ -17,6 +17,7 @@ if (isset($_SESSION['user_type']) == false) {
 <?php } ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,7 +27,7 @@ if (isset($_SESSION['user_type']) == false) {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <?php
     require_once('../ins/connection.php');
-     /* INCOME */
+    /* INCOME */
     $sql_income = "select account_num,sum(amount) as sum_account_num from income group by account_num";
     $sql_income_total = "select sum(amount) as amount_total_income from income";
     $result_income = mysqli_query($link, $sql_income);
@@ -45,6 +46,7 @@ if (isset($_SESSION['user_type']) == false) {
     $amount_total_expenses = $row['amount_total_expenses'] ?? 0;
     ?>
 </head>
+
 <body>
     <div class="sidebar">
         <h2>Dashboard</h2>
@@ -179,4 +181,5 @@ if (isset($_SESSION['user_type']) == false) {
         });
     </script>
 </body>
+
 </html>

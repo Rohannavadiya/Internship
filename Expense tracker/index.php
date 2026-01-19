@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Index</title>
     <link rel="stylesheet" href="ins/Style.css">
 </head>
+
 <body>
     <div class="content-index">
         <div class="box-index">
@@ -31,4 +33,5 @@
         </div>
     </div>
 </body>
+
 </html>

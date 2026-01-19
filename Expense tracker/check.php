@@ -11,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             alert("Invalid input!");
             window.location.href = "index.php";
         </script>
+        
         <?php
     } else {
         $row = mysqli_fetch_assoc($result);

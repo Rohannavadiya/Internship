@@ -1,18 +1,17 @@
 <?php
 if ($_SERVER['REQUEST_METHOD'] === "GET") {
-require_once('../../ins/connection.php');
-extract($_REQUEST);
-$sql = "delete from master_account where id=$id";
-mysqli_query($link, $sql) or die(mysqli_error($link));
+    require_once('../../ins/connection.php');
+    extract($_REQUEST);
+    $sql = "delete from master_account where id=$id";
+    mysqli_query($link, $sql) or die(mysqli_error($link));
 ?>
-<script>
-    alert("Record deleted successfully");
-    window.location.href = "../master_account_register.php";
-</script>
-<?php }
-else{
+    <script>
+        alert("Record deleted successfully");
+        window.location.href = "../master_account_register.php";
+    </script>
+<?php } else {
 ?>
- <script>
+    <script>
         alert("Direct file not open!");
         window.location.href = "../Dashboard.php";
     </script>
