@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once('../config/db.php');
+$tmp_id = $_SESSION['user_id'];
 /*  ✅ Uncomment when you add login system
 if(!isset($_SESSION['user_id']) || $_SESSION['role'] != 'user'){
     header("Location: ../auth/login.php");
@@ -9,7 +10,7 @@ if(!isset($_SESSION['user_id']) || $_SESSION['role'] != 'user'){
 */
 
 // Demo user name (remove later when session works)
-$user_name = $_SESSION['name'] ?? "User";
+$user_name = $_SESSION['user_name'] ?? "User";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -332,7 +333,7 @@ $user_name = $_SESSION['name'] ?? "User";
                     <p>All rides you booked</p>
                     <div class="value">
                         <?php
-                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id";
+                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id and u.id=$tmp_id";
                         $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
                         $row = mysqli_fetch_assoc($result);
                         extract($row);
@@ -347,7 +348,7 @@ $user_name = $_SESSION['name'] ?? "User";
                     <p>Successfully finished</p>
                     <div class="value">
                         <?php
-                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id and b.status='complete'";
+                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id and b.status='complete' and u.id=$tmp_id";
                         $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
                         $row = mysqli_fetch_assoc($result);
                         extract($row);
@@ -362,7 +363,7 @@ $user_name = $_SESSION['name'] ?? "User";
                     <p>Waiting for driver</p>
                     <div class="value">
                         <?php
-                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id and b.status='requested'";
+                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id and b.status='requested' and u.id=$tmp_id";
                         $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
                         $row = mysqli_fetch_assoc($result);
                         extract($row);
@@ -377,7 +378,7 @@ $user_name = $_SESSION['name'] ?? "User";
                     <p>Currently running ride</p>
                     <div class="value">
                         <?php
-                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id and b.status='ongoing'";
+                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id and b.status='ongoing' and u.id=$tmp_id";
                         $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
                         $row = mysqli_fetch_assoc($result);
                         extract($row);
@@ -406,7 +407,7 @@ $user_name = $_SESSION['name'] ?? "User";
             <!-- Recent Rides -->
             <div class="section">
                 <h3>Recent Rides</h3>
-
+                
                 <table class="table">
                     <thead>
                         <tr>
@@ -418,14 +419,20 @@ $user_name = $_SESSION['name'] ?? "User";
                         </tr>
                     </thead>
                     <tbody>
+                        <?php
+                    $sql="select booking_time,pickup_location,drop_location,status,fare from bookings where user_id=$tmp_id";
+                    $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
+                    while($row=mysqli_fetch_assoc($result)){
+                        extract($row);
+                ?>
                         <tr>
-                            <td>16 Jan 2026</td>
-                            <td>Railway Station</td>
-                            <td>City Mall</td>
-                            <td><span class="badge completed">Completed</span></td>
-                            <td>₹180</td>
+                            <td><?= $booking_time; ?></td>
+                            <td><?= $pickup_location; ?></td>
+                            <td><?= $drop_location; ?></td>
+                            <td><span class="badge completed"><?= $status; ?></span></td>
+                            <td><?= $fare; ?></td>
                         </tr>
-
+                <?php } ?>
                     </tbody>
                 </table>
             </div>
