@@ -264,6 +264,10 @@ $user_name = $_SESSION['user_name'] ?? "User";
             display: inline-block;
         }
 
+        .requested{
+            background: #fff7ed;
+            color: #c2410c;
+        }
         .pending {
             background: #fff7ed;
             color: #c2410c;
@@ -420,16 +424,16 @@ $user_name = $_SESSION['user_name'] ?? "User";
                     </thead>
                     <tbody>
                         <?php
-                    $sql="select booking_time,pickup_location,drop_location,status,fare from bookings where user_id=$tmp_id";
+                    $sql="select booking_time,pickup_location,drop_location,status,fare from bookings where user_id=$tmp_id limit 5";
                     $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
                     while($row=mysqli_fetch_assoc($result)){
                         extract($row);
                 ?>
                         <tr>
-                            <td><?= $booking_time; ?></td>
+                            <td><?= date("d-m-Y", strtotime($booking_time)); ?></td>
                             <td><?= $pickup_location; ?></td>
                             <td><?= $drop_location; ?></td>
-                            <td><span class="badge completed"><?= $status; ?></span></td>
+                            <td><span class="badge <?= $status; ?>"><?= $status; ?></span></td>
                             <td><?= $fare; ?></td>
                         </tr>
                 <?php } ?>
