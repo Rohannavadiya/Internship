@@ -1,26 +1,24 @@
 <?php
 session_start();
 require_once('../config/db.php');
-$tmp_id = $_SESSION['user_id'];
-/*  ✅ Uncomment when you add login system
-if(!isset($_SESSION['user_id']) || $_SESSION['role'] != 'user'){
+/* ✅ Enable after login system
+if(!isset($_SESSION['driver_id'])){
     header("Location: ../auth/login.php");
     exit();
 }
 */
 
-// Demo user name (remove later when session works)
-$user_name = $_SESSION['user_name'] ?? "User";
+$driver_name = $_SESSION['driver_name'];
+$tmp_id = $_SESSION['driver_id'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>User Dashboard | CabRide</title>
+    <title>Driver Dashboard | CabRide</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
@@ -36,7 +34,6 @@ $user_name = $_SESSION['user_name'] ?? "User";
             color: #111827;
         }
 
-        /* Layout */
         .wrapper {
             display: flex;
             min-height: 100vh;
@@ -107,7 +104,7 @@ $user_name = $_SESSION['user_name'] ?? "User";
             padding: 30px;
         }
 
-        /* Top bar */
+        /* Topbar */
         .topbar {
             background: #fff;
             padding: 18px 22px;
@@ -128,7 +125,7 @@ $user_name = $_SESSION['user_name'] ?? "User";
             font-weight: 700;
         }
 
-        /* Cards */
+        /* Stats Cards */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -162,29 +159,35 @@ $user_name = $_SESSION['user_name'] ?? "User";
 
         .card .value {
             font-size: 26px;
-            font-weight: 700;
+            font-weight: 800;
             color: #111827;
         }
 
-        .card small {
-            color: #10b981;
-            font-weight: 600;
-        }
-
-        /* Actions */
+        /* Action Cards */
         .actions {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 18px;
+            margin-bottom: 25px;
         }
 
         .action-card {
             background: linear-gradient(135deg, #fde047, #facc15);
             border-radius: 20px;
             padding: 22px;
-            color: #000;
             position: relative;
             overflow: hidden;
+        }
+
+        .action-card::after {
+            content: "";
+            width: 120px;
+            height: 120px;
+            background: rgba(0, 0, 0, 0.12);
+            position: absolute;
+            right: -30px;
+            top: -30px;
+            border-radius: 50%;
         }
 
         .action-card h3 {
@@ -205,33 +208,22 @@ $user_name = $_SESSION['user_name'] ?? "User";
             color: #facc15;
             padding: 10px 18px;
             border-radius: 14px;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 14px;
         }
 
-        .action-card::after {
-            content: "";
-            width: 120px;
-            height: 120px;
-            background: rgba(0, 0, 0, 0.1);
-            position: absolute;
-            right: -30px;
-            top: -30px;
-            border-radius: 50%;
-        }
-
-        /* Recent ride section */
+        /* Table */
         .section {
             background: #fff;
             border-radius: 18px;
             padding: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
             border: 1px solid #f1f5f9;
-            margin-top: 25px;
         }
 
         .section h3 {
             margin-bottom: 12px;
+            font-size: 18px;
         }
 
         .table {
@@ -248,7 +240,7 @@ $user_name = $_SESSION['user_name'] ?? "User";
 
         .table th {
             color: #6b7280;
-            font-weight: 600;
+            font-weight: 700;
             border-bottom: 1px solid #e5e7eb;
         }
 
@@ -256,20 +248,16 @@ $user_name = $_SESSION['user_name'] ?? "User";
             border-bottom: 1px solid #f1f5f9;
         }
 
+        /* Status badge */
         .badge {
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 800;
             display: inline-block;
         }
 
         .requested {
-            background: #fff7ed;
-            color: #c2410c;
-        }
-
-        .pending {
             background: #fff7ed;
             color: #c2410c;
         }
@@ -279,17 +267,21 @@ $user_name = $_SESSION['user_name'] ?? "User";
             color: #1d4ed8;
         }
 
+        .ongoing {
+            background: #fefce8;
+            color: #a16207;
+        }
+
         .completed {
             background: #ecfdf5;
             color: #047857;
         }
 
-        .ongoing {
-            background: #eff6ff;
-            color: #1d4ed8;
+        .cancelled {
+            background: #fef2f2;
+            color: #b91c1c;
         }
 
-        /* Responsive */
         @media(max-width:900px) {
             .sidebar {
                 display: none;
@@ -303,7 +295,6 @@ $user_name = $_SESSION['user_name'] ?? "User";
 </head>
 
 <body>
-
     <div class="wrapper">
 
         <!-- Sidebar -->
@@ -311,136 +302,130 @@ $user_name = $_SESSION['user_name'] ?? "User";
             <div class="brand">CabRide</div>
 
             <div class="profile-box">
-                <h3>Hello, <?= htmlspecialchars($user_name); ?> 👋</h3>
-                <p>User Dashboard</p>
+                <h3>Hello, <?= htmlspecialchars($driver_name); ?> 👋</h3>
+                <p>Driver Dashboard</p>
             </div>
 
             <div class="menu">
                 <a class="active" href="dashboard.php">🏠 Dashboard</a>
-                <a href="book_ride.php">🚖 Book Ride</a>
-                <a href="track_ride.php">📍 Track Ride</a>
-                <a href="ride_history.php">📜 Ride History</a>
+                <a href="ride_requests.php">📥 Ride Requests</a>
+                <a href="my_rides.php">🚖 My Rides</a>
+                <a href="earnings.php">💰 Earnings</a>
                 <a href="profile.php">👤 Profile</a>
                 <a href="../auth/logout.php">🚪 Logout</a>
             </div>
         </div>
 
-        <!-- Main Content -->
+        <!-- Main -->
         <div class="main">
 
             <!-- Topbar -->
             <div class="topbar">
-                <h2>Welcome Back, <span><?= htmlspecialchars($user_name); ?></span></h2>
-                <div>
-                    <small style="color:#6b7280;">CabRide • User Panel</small>
-                </div>
+                <h2>Welcome, <span><?= htmlspecialchars($driver_name); ?></span></h2>
+                <small style="color:#6b7280;">CabRide • Driver Panel</small>
             </div>
 
             <!-- Stats -->
             <div class="grid">
                 <div class="card">
                     <h3>Total Rides</h3>
-                    <p>All rides you booked</p>
+                    <p>All rides completed or running</p>
                     <div class="value">
                         <?php
-                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id and u.id=$tmp_id";
+                        $sql = "select count(b.driver_id) as Total_Rides from drivers d,bookings b where b.driver_id=d.id and d.id=$tmp_id";
                         $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
                         $row = mysqli_fetch_assoc($result);
                         extract($row);
                         echo $Total_Rides;
                         ?>
                     </div>
-                    <small>+2 this week</small>
+                </div>
+
+                <div class="card">
+                    <h3>Pending Requests</h3>
+                    <p>Waiting for your action</p>
+                    <div class="value">
+                        <?php
+                        $sql = "select count(b.driver_id) as Total_Pending_Rides from drivers d,bookings b where b.driver_id=d.id and b.status='pending' and d.id=$tmp_id";
+                        $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
+                        $row = mysqli_fetch_assoc($result);
+                        extract($row);
+                        echo $Total_Pending_Rides;
+                        ?>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Ongoing Rides</h3>
+                    <p>Currently running rides</p>
+                    <div class="value">
+                        <?php
+                        $sql = "select count(b.driver_id) as Total_Ongoing_Rides from drivers d,bookings b where b.driver_id=d.id and b.status='ongoing' and d.id=$tmp_id";
+                        $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
+                        $row = mysqli_fetch_assoc($result);
+                        extract($row);
+                        echo $Total_Ongoing_Rides;
+                        ?>
+                    </div>
                 </div>
 
                 <div class="card">
                     <h3>Completed</h3>
-                    <p>Successfully finished</p>
+                    <p>Successfully finished rides</p>
                     <div class="value">
                         <?php
-                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id and b.status='complete' and u.id=$tmp_id";
+                        $sql = "select count(b.driver_id) as Total_Completed_Rides from drivers d,bookings b where b.driver_id=d.id and b.status='complete' and d.id=$tmp_id";
                         $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
                         $row = mysqli_fetch_assoc($result);
                         extract($row);
-                        echo $Total_Rides;
+                        echo $Total_Completed_Rides;
                         ?>
                     </div>
-                    <small>Great job ✅</small>
-                </div>
-
-                <div class="card">
-                    <h3>Pending</h3>
-                    <p>Waiting for driver</p>
-                    <div class="value">
-                        <?php
-                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id and b.status='requested' and u.id=$tmp_id";
-                        $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
-                        $row = mysqli_fetch_assoc($result);
-                        extract($row);
-                        echo $Total_Rides;
-                        ?>
-                    </div>
-                    <small>Be ready 🚕</small>
-                </div>
-
-                <div class="card">
-                    <h3>Ongoing</h3>
-                    <p>Currently running ride</p>
-                    <div class="value">
-                        <?php
-                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id and b.status='ongoing' and u.id=$tmp_id";
-                        $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
-                        $row = mysqli_fetch_assoc($result);
-                        extract($row);
-                        echo $Total_Rides;
-                        ?>
-                    </div>
-                    <small>Tracking live 📍</small>
                 </div>
             </div>
 
-            <!-- Action Cards -->
+            <!-- Actions -->
             <div class="actions">
                 <div class="action-card">
-                    <h3>Book a New Ride 🚖</h3>
-                    <p>Choose pickup & destination and get instant driver confirmation.</p>
-                    <a href="book_ride.php">Book Ride</a>
+                    <h3>Go Online ✅</h3>
+                    <p>Start receiving ride requests from users.</p>
+                    <a href="#">Go Online</a>
                 </div>
 
                 <div class="action-card">
-                    <h3>Track Your Ride 📍</h3>
-                    <p>Check driver status, ride status and location updates anytime.</p>
-                    <a href="track_ride.php">Track Ride</a>
+                    <h3>View Requests 📥</h3>
+                    <p>Accept or reject new ride booking requests.</p>
+                    <a href="ride_requests.php">Open Requests</a>
                 </div>
             </div>
 
-            <!-- Recent Rides -->
+            <!-- Latest Requests Table -->
             <div class="section">
-                <h3>Recent Rides</h3>
+                <h3>📌 Latest Ride Requests</h3>
 
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Date</th>
+                            <th>User</th>
                             <th>Pickup</th>
                             <th>Drop</th>
-                            <th>Status</th>
                             <th>Fare</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
-                        $sql = "select booking_time,pickup_location,drop_location,status,fare from bookings where user_id=$tmp_id limit 5";
+                        $sql = "select u.full_name,b.pickup_location,b.drop_location,b.fare,b.status from users u,bookings b,drivers d where b.user_id=u.id and b.driver_id=d.id limit 5";
                         $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
                         while ($row = mysqli_fetch_assoc($result)) {
                             extract($row);
                         ?>
                             <tr>
-                                <td><?= date("d-m-Y", strtotime($booking_time)); ?></td>
+                                <td><?= $full_name; ?></td>
                                 <td><?= $pickup_location; ?></td>
                                 <td><?= $drop_location; ?></td>
-                                <td><span class="badge <?= $status; ?>"><?= $status; ?></span></td>
                                 <td><?= $fare; ?></td>
+                                <td><span class="badge <?= $status; ?>"><?= $status; ?></span></td>
                             </tr>
                         <?php } ?>
                     </tbody>
@@ -449,7 +434,6 @@ $user_name = $_SESSION['user_name'] ?? "User";
 
         </div>
     </div>
-
 </body>
 
 </html>

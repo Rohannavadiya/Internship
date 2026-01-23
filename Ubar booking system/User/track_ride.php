@@ -10,17 +10,13 @@ if(!isset($_SESSION['user_id'])){
 }
 */
 
-$tmp_id = $_SESSION['user_id']; // demo
+$tmp_id = $_SESSION['user_id'];
+$sql = "SELECT b.booking_time,b.status,b.pickup_location,b.drop_location,b.distance_km,b.fare,b.driver_id 
+        FROM bookings b, users u 
+        WHERE u.id=b.user_id 
+        AND u.id=$tmp_id 
+        AND b.status!='completed'";
 
-// ✅ Fetch latest booking for this user
-// $sql = "SELECT b.*, d.full_name AS driver_name, d.mobile AS driver_mobile, d.vehicle_type
-//         FROM bookings b
-//         LEFT JOIN drivers d ON b.driver_id = d.id
-//         WHERE b.user_id = '$user_id'
-//         ORDER BY b.id DESC
-//         LIMIT 1";
-
-$sql = "select b.status,b.pickup_location,b.drop_location,b.distance_km,b.fare from bookings b,users u where u.id=b.user_id and u.id=$tmp_id and b.status!='complete'";
 $result = mysqli_query($link, $sql);
 ?>
 <!DOCTYPE html>
@@ -258,6 +254,19 @@ $result = mysqli_query($link, $sql);
             font-size: 14px;
         }
 
+        .step.done {
+            border: 1px solid #bbf7d0;
+            background: #ecfdf5;
+        }
+
+        .step.done span {
+            color: #047857;
+        }
+
+        .step.done strong {
+            color: #047857;
+        }
+
         /* No ride */
         .no-ride {
             text-align: center;
@@ -285,7 +294,7 @@ $result = mysqli_query($link, $sql);
         <div class="sidebar">
             <div class="brand">CabRide</div>
             <div class="profile-box">
-                <h3>Hello, <?= htmlspecialchars($user_name); ?> 👋</h3>
+                <h3>Hello, <?= $user_name; ?> 👋</h3>
                 <p>User Dashboard</p>
             </div>
             <div class="menu">
@@ -309,6 +318,11 @@ $result = mysqli_query($link, $sql);
             <?php if (mysqli_num_rows($result) > 0) {
                 while ($row = mysqli_fetch_assoc($result)) {
                     extract($row);
+                    $step1 = true; // requested always true
+                    $step2 = in_array($status, ['accepted', 'ongoing', 'completed']);
+                    $step3 = in_array($status, ['ongoing', 'completed']);
+                    $step4 = ($status == 'completed');
+
             ?>
                     <div class="container">
                         <div class="box">
@@ -338,42 +352,53 @@ $result = mysqli_query($link, $sql);
                                 </div>
                             </div>
                             <div class="steps">
-                                <div class="step">
-                                    <span>✅ Step 1</span>
+
+                                <div class="step <?= $step1 ? 'done' : '' ?>">
+                                    <span><?= $step1 ? '✅ Completed' : '⏳ Pending' ?></span>
                                     <strong>Ride Requested</strong>
                                 </div>
-                                <div class="step">
-                                    <span>🚖 Step 2</span>
+
+                                <div class="step <?= $step2 ? 'done' : '' ?>">
+                                    <span><?= $step2 ? '✅ Completed' : '⏳ Pending' ?></span>
                                     <strong>Driver Accepted</strong>
                                 </div>
-                                <div class="step">
-                                    <span>📍 Step 3</span>
+
+                                <div class="step <?= $step3 ? 'done' : '' ?>">
+                                    <span><?= $step3 ? '✅ Completed' : '⏳ Pending' ?></span>
                                     <strong>Ride Ongoing</strong>
                                 </div>
-                                <div class="step">
-                                    <span>🏁 Step 4</span>
+
+                                <div class="step <?= $step4 ? 'done' : '' ?>">
+                                    <span><?= $step4 ? '✅ Completed' : '⏳ Pending' ?></span>
                                     <strong>Ride Completed</strong>
                                 </div>
+
                             </div>
+
                             <div style="margin-top:20px;">
                                 <h3 style="margin-bottom:10px;">👨‍✈️ Driver Details</h3>
-                                <?php if (!empty($ride['driver_id'])) { ?>
+                                <?php if (!empty($driver_id)) {
+                                    $sql = "select full_name,mobile,vehicle_type from drivers where id=$driver_id";
+                                    $result = mysqli_query($link, $sql) or die(mysqli_error($link));
+                                    $row = mysqli_fetch_assoc($result);
+                                    extract($row);
+                                ?>
                                     <div class="grid">
                                         <div class="info">
                                             <h4>Driver Name</h4>
-                                            <p><?= htmlspecialchars($ride['driver_name']); ?></p>
+                                            <p><?= $full_name; ?></p>
                                         </div>
                                         <div class="info">
                                             <h4>Driver Mobile</h4>
-                                            <p><?= htmlspecialchars($ride['driver_mobile']); ?></p>
+                                            <p><?= $mobile; ?></p>
                                         </div>
                                         <div class="info">
                                             <h4>Vehicle Type</h4>
-                                            <p><?= htmlspecialchars($ride['vehicle_type']); ?></p>
+                                            <p><?= $vehicle_type; ?></p>
                                         </div>
                                         <div class="info">
                                             <h4>Booking Time</h4>
-                                            <p><?= htmlspecialchars($ride['booking_time']); ?></p>
+                                            <p><?= $booking_time; ?></p>
                                         </div>
                                     </div>
                                 <?php } else { ?>

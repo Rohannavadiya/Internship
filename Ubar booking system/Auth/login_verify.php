@@ -37,9 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (mysqli_num_rows($result) === 1) {
             $row = mysqli_fetch_assoc($result);
             if (password_verify($pass, $row['password'])) {
-                $_SESSION['user_id'] = $row['id'];
-                $_SESSION['user_type'] = 'driver';
-                $_SESSION['user_name'] = $row['full_name'];
+                $_SESSION['driver_id'] = $row['id'];
+                $_SESSION['driver_type'] = 'driver';
+                $_SESSION['driver_name'] = $row['full_name'];
                 header("Location: ../Driver/dashboard.php");
             } else { ?>
                 <script>

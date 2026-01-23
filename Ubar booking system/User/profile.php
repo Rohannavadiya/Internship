@@ -155,31 +155,24 @@ if (mysqli_num_rows($result) == 1) {
         }
 
         .avatar {
-            width: 72px;
-            height: 72px;
+            width: 80px;
+            height: 80px;
             border-radius: 18px;
             background: linear-gradient(135deg, #fde047, #facc15);
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 26px;
-            font-weight: 900;
-            color: #000;
+            flex-shrink: 0;
         }
 
         .avatar img {
-            /* width: 100px; */
-            height: 85px;
-            border-radius: 20px;
-            background: linear-gradient(135deg, #fde047, #facc15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 34px;
-            font-weight: 900;
-            color: #000;
-            margin: 0 auto 12px;
-            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* ✅ image will fit properly */
+            border-radius: 18px;
+            display: block;
         }
 
         .user-info h3 {
@@ -294,7 +287,7 @@ if (mysqli_num_rows($result) == 1) {
 
             <!-- Topbar -->
             <div class="topbar">
-                <h2>My <span>Profile</span></h2>
+                <h2>Welcome Back, <span><?= htmlspecialchars($user_name); ?></span></h2>
                 <small style="color:#6b7280;">CabRide • User Panel</small>
             </div>
 
@@ -305,6 +298,7 @@ if (mysqli_num_rows($result) == 1) {
 
             <!-- Profile Detail Card -->
             <div class="card">
+                <h2>My <span>Profile</span></h2>
                 <br>
                 <div class="avatar-box">
                     <div class="avatar">
