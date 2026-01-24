@@ -1,0 +1,4 @@
+<?php
+extract($_POST);
+
+?>
