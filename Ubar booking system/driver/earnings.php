@@ -274,7 +274,7 @@ $list_res = mysqli_query($link, $list_sql);
                 <a href="my_rides.php">🚖 My Rides</a>
                 <a class="active" href="earnings.php">💰 Earnings</a>
                 <a href="profile.php">👤 Profile</a>
-                <a href="../auth/logout.php">🚪 Logout</a>
+                <a href="logout.php">🚪 Logout</a>
             </div>
         </div>
 

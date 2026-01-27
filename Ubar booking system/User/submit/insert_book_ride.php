@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     mysqli_query($link, $sql) or die(mysqli_error($link));
 ?>
     <script>
-        alert("Income inserted successfully");
+        alert("Booking successfully");
         window.location.href = "../track_ride.php";
     </script>
 <?php

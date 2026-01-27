@@ -291,7 +291,7 @@ $result = mysqli_query($link, $sql);
                 <a class="active" href="my_rides.php">🚖 My Rides</a>
                 <a href="earnings.php">💰 Earnings</a>
                 <a href="profile.php">👤 Profile</a>
-                <a href="../auth/logout.php">🚪 Logout</a>
+                <a href="logout.php">🚪 Logout</a>
             </div>
         </div>
 

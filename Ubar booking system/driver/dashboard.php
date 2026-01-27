@@ -9,7 +9,7 @@ if(!isset($_SESSION['driver_id'])){
 */
 
 $driver_name = $_SESSION['driver_name'];
-$tmp_id = $_SESSION['driver_id'];
+$driver_id = $_SESSION['driver_id'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -312,7 +312,7 @@ $tmp_id = $_SESSION['driver_id'];
                 <a href="my_rides.php">🚖 My Rides</a>
                 <a href="earnings.php">💰 Earnings</a>
                 <a href="profile.php">👤 Profile</a>
-                <a href="../auth/logout.php">🚪 Logout</a>
+                <a href="logout.php">🚪 Logout</a>
             </div>
         </div>
 
@@ -332,7 +332,7 @@ $tmp_id = $_SESSION['driver_id'];
                     <p>All rides completed or running</p>
                     <div class="value">
                         <?php
-                        $sql = "select count(b.driver_id) as Total_Rides from drivers d,bookings b where b.driver_id=d.id and d.id=$tmp_id";
+                        $sql = "select count(b.driver_id) as Total_Rides from drivers d,bookings b where b.driver_id=d.id and d.id=$driver_id";
                         $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
                         $row = mysqli_fetch_assoc($result);
                         extract($row);
@@ -346,7 +346,7 @@ $tmp_id = $_SESSION['driver_id'];
                     <p>Waiting for your action</p>
                     <div class="value">
                         <?php
-                        $sql = "select count(b.driver_id) as Total_Pending_Rides from drivers d,bookings b where b.driver_id=d.id and b.status='pending' and d.id=$tmp_id";
+                        $sql = "select count(b.driver_id) as Total_Pending_Rides from drivers d,bookings b where b.driver_id=d.id and b.status='pending' and d.id=$driver_id";
                         $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
                         $row = mysqli_fetch_assoc($result);
                         extract($row);
@@ -360,7 +360,7 @@ $tmp_id = $_SESSION['driver_id'];
                     <p>Currently running rides</p>
                     <div class="value">
                         <?php
-                        $sql = "select count(b.driver_id) as Total_Ongoing_Rides from drivers d,bookings b where b.driver_id=d.id and b.status='ongoing' and d.id=$tmp_id";
+                        $sql = "select count(b.driver_id) as Total_Ongoing_Rides from drivers d,bookings b where b.driver_id=d.id and b.status='ongoing' and d.id=$driver_id";
                         $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
                         $row = mysqli_fetch_assoc($result);
                         extract($row);
@@ -374,7 +374,7 @@ $tmp_id = $_SESSION['driver_id'];
                     <p>Successfully finished rides</p>
                     <div class="value">
                         <?php
-                        $sql = "select count(b.driver_id) as Total_Completed_Rides from drivers d,bookings b where b.driver_id=d.id and b.status='complete' and d.id=$tmp_id";
+                        $sql = "select count(b.driver_id) as Total_Completed_Rides from drivers d,bookings b where b.driver_id=d.id and b.status='completed' and d.id=$driver_id";
                         $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
                         $row = mysqli_fetch_assoc($result);
                         extract($row);
@@ -386,10 +386,28 @@ $tmp_id = $_SESSION['driver_id'];
 
             <!-- Actions -->
             <div class="actions">
+                <?php
+                $sql = "select availability from drivers where id=$driver_id";
+                $result = mysqli_query($link, $sql);
+                $row = mysqli_fetch_assoc($result);
+                extract($row);
+                ?>
                 <div class="action-card">
-                    <h3>Go Online ✅</h3>
-                    <p>Start receiving ride requests from users.</p>
-                    <a href="#">Go Online</a>
+                    <?php
+                    if ($availability == 'offline') {
+                    ?>
+                        <h3>Go Online ✅</h3>
+                        <p>Start receiving ride requests from users.</p>
+                        <a href="submit/online_offline.php?availability=online">Go Online</a>
+                    <?php
+                    } else if($availability == 'online'){
+                    ?>
+                        <h3>Go Offline ✅</h3>
+                        <p>End receiving ride requests from users.</p>
+                        <a href="submit/online_offline.php?availability=offline">Go Offline</a>
+                    <?php
+                    }
+                    ?>
                 </div>
 
                 <div class="action-card">

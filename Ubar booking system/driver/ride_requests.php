@@ -20,11 +20,7 @@ if (isset($_REQUEST['sussess'])) {
 }
 
 /* ✅ Fetch Requested Rides */
-$sql = "SELECT bookings.*, users.full_name AS user_name, users.mobile AS user_mobile
-        FROM bookings
-        INNER JOIN users ON bookings.user_id = users.id
-        WHERE bookings.status='requested'
-        ORDER BY bookings.booking_time DESC";
+$sql="select b.*,u.full_name,u.mobile from bookings b,users u,drivers d where b.user_id=u.id and b.status='requested' and d.availability='online' ORDER BY b.booking_time DESC";
 
 $result = mysqli_query($link, $sql);
 ?>
@@ -276,7 +272,7 @@ $result = mysqli_query($link, $sql);
                 <a href="my_rides.php">🚖 My Rides</a>
                 <a href="earnings.php">💰 Earnings</a>
                 <a href="profile.php">👤 Profile</a>
-                <a href="../auth/logout.php">🚪 Logout</a>
+                <a href="logout.php">🚪 Logout</a>
             </div>
         </div>
 
@@ -312,8 +308,8 @@ $result = mysqli_query($link, $sql);
                         <?php if (mysqli_num_rows($result) > 0) { ?>
                             <?php while ($row = mysqli_fetch_assoc($result)) { ?>
                                 <tr>
-                                    <td><?= htmlspecialchars($row['user_name']); ?></td>
-                                    <td><?= htmlspecialchars($row['user_mobile']); ?></td>
+                                    <td><?= htmlspecialchars($row['full_name']); ?></td>
+                                    <td><?= htmlspecialchars($row['mobile']); ?></td>
                                     <td><?= htmlspecialchars($row['pickup_location']); ?></td>
                                     <td><?= htmlspecialchars($row['drop_location']); ?></td>
                                     <td><?= htmlspecialchars($row['distance_km']); ?></td>

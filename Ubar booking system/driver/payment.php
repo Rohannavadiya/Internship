@@ -14,7 +14,7 @@ $driver_name = $_SESSION['driver_name'];
 
 $msg = "";
 /* ✅ Check booking belongs to driver */
-$sql = "select u.full_name,u.mobile,b.pickup_location,b.drop_location,b.distance_km,b.fare from users u,bookings b where u.id=b.user_id and b.driver_id=$driver_id and b.id=$booking_id";
+$sql = "select b.user_id,u.full_name,u.mobile,b.pickup_location,b.drop_location,b.distance_km,b.fare from users u,bookings b where u.id=b.user_id and b.driver_id=$driver_id and b.id=$booking_id";
 $result = mysqli_query($link, $sql);
 if (mysqli_num_rows($result) != 1) {
     die("Ride not found or not allowed!");
@@ -22,32 +22,7 @@ if (mysqli_num_rows($result) != 1) {
 $row = mysqli_fetch_assoc($result);
 extract($row);
 
-/* ✅ Check payment already done */
-$pay_check_sql = "SELECT * FROM payments WHERE booking_id='$booking_id' AND payment_status='paid' LIMIT 1";
-$pay_check_res = mysqli_query($link, $pay_check_sql);
-$payment_done = (mysqli_num_rows($pay_check_res) == 1);
 
-/* ✅ Make Payment */
-if (isset($_POST['confirm_payment']) && !$payment_done) {
-
-    $payment_method = mysqli_real_escape_string($link, $_POST['payment_method']);
-    $amount = $ride['fare'];
-
-    if ($payment_method != "cash" && $payment_method != "online") {
-        $msg = "<div class='alert error'>❌ Please select payment method!</div>";
-    } else {
-
-        $insert_sql = "INSERT INTO payments (booking_id, amount, payment_method, payment_status)
-                       VALUES ('$booking_id', '$amount', '$payment_method', 'paid')";
-
-        if (mysqli_query($link, $insert_sql)) {
-            header("Location: payment.php?booking_id=" . $booking_id . "&paid=1");
-            exit();
-        } else {
-            $msg = "<div class='alert error'>❌ Error: " . mysqli_error($link) . "</div>";
-        }
-    }
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -348,11 +323,6 @@ if (isset($_POST['confirm_payment']) && !$payment_done) {
                 </div>
 
                 <div class="pay-box">
-                    <?php if ($payment_done) { ?>
-                        <div class="alert success" style="margin-bottom:0;">
-                            ✅ Payment already done for this ride.
-                        </div>
-                    <?php } else { ?>
                         <form method="POST" action="submit/done_payment.php">
                             <label>Select Payment Method</label>
                             <select class="select" name="payment_method" required>
@@ -362,11 +332,11 @@ if (isset($_POST['confirm_payment']) && !$payment_done) {
                             </select>
                             <input type="hidden" name="booking_id" value="<?= $booking_id; ?>">
                             <input type="hidden" name="fare" value="<?= $fare; ?>">
+                            <input type="hidden" name="user_id" value="<?= $user_id; ?>">
                             <button class="btn" type="submit" name="confirm_payment">
                                 ✅ Confirm Payment
                             </button>
                         </form>
-                    <?php } ?>
                 </div>
 
                 <a class="back" href="my_rides.php">⬅ Back to My Rides</a>

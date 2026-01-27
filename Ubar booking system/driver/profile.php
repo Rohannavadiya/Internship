@@ -278,7 +278,7 @@ if (mysqli_num_rows($result) == 1) {
                 <a href="my_rides.php">🚖 My Rides</a>
                 <a href="earnings.php">💰 Earnings</a>
                 <a class="active" href="profile.php">👤 Profile</a>
-                <a href="../auth/logout.php">🚪 Logout</a>
+                <a href="logout.php">🚪 Logout</a>
             </div>
         </div>
 

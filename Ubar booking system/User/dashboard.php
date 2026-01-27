@@ -321,7 +321,7 @@ $user_name = $_SESSION['user_name'] ?? "User";
                 <a href="track_ride.php">📍 Track Ride</a>
                 <a href="ride_history.php">📜 Ride History</a>
                 <a href="profile.php">👤 Profile</a>
-                <a href="../auth/logout.php">🚪 Logout</a>
+                <a href="logout.php">🚪 Logout</a>
             </div>
         </div>
 
@@ -358,7 +358,7 @@ $user_name = $_SESSION['user_name'] ?? "User";
                     <p>Successfully finished</p>
                     <div class="value">
                         <?php
-                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id and b.status='complete' and u.id=$tmp_id";
+                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id and b.status='completed' and u.id=$tmp_id";
                         $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
                         $row = mysqli_fetch_assoc($result);
                         extract($row);

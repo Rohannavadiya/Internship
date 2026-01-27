@@ -16,15 +16,6 @@ if (isset($start_id)) {
     }
 }
 
-if (isset($complete_id)) {
-    // $complete_sql = "UPDATE bookings 
-    //                  SET status='completed'
-    //                  WHERE id='$complete_id' AND driver_id='$driver_id' AND status='ongoing'";
-
-    // if (mysqli_query($link, $complete_sql)) {
+if (isset($complete_id))
     header("Location: ../payment.php?booking_id=" . $complete_id);
-    //     exit();
-    // } else {
-    //     $msg = "<div class='alert error'>❌ Error: " . mysqli_error($link) . "</div>";
-    // }
-}
+?>
