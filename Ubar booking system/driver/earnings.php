@@ -9,39 +9,9 @@ if(!isset($_SESSION['driver_id'])){
 }
 */
 
-$driver_id   = $_SESSION['driver_id'] ?? 1; // demo
-$driver_name = $_SESSION['driver_name'] ?? "Driver";
+$driver_id   = $_SESSION['driver_id'];
+$driver_name = $_SESSION['driver_name'];
 
-/* ✅ Total Earnings + Total Completed */
-$total_sql = "SELECT 
-                COUNT(*) AS total_completed,
-                COALESCE(SUM(fare),0) AS total_earnings
-              FROM bookings
-              WHERE driver_id='$driver_id' AND status='completed'";
-$total_res = mysqli_query($link, $total_sql);
-$total_row = mysqli_fetch_assoc($total_res);
-
-$total_completed = $total_row['total_completed'];
-$total_earnings  = $total_row['total_earnings'];
-
-/* ✅ Today Earnings */
-$today_sql = "SELECT COALESCE(SUM(fare),0) AS today_earnings
-              FROM bookings
-              WHERE driver_id='$driver_id' 
-              AND status='completed'
-              AND DATE(booking_time)=CURDATE()";
-$today_res = mysqli_query($link, $today_sql);
-$today_row = mysqli_fetch_assoc($today_res);
-
-$today_earnings = $today_row['today_earnings'];
-
-/* ✅ Completed rides list */
-$list_sql = "SELECT b.*, u.full_name AS user_name
-             FROM bookings b
-             INNER JOIN users u ON b.user_id = u.id
-             WHERE b.driver_id='$driver_id' AND b.status='completed'
-             ORDER BY b.booking_time DESC";
-$list_res = mysqli_query($link, $list_sql);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -289,21 +259,39 @@ $list_res = mysqli_query($link, $list_sql);
             <!-- Summary Cards -->
             <div class="grid">
                 <div class="card">
+            <?php 
+                $sql="select sum(driver_amount) as driver_amount from payments where driver_id=$driver_id";
+                $result = mysqli_query($link, $sql);
+                $row = mysqli_fetch_assoc($result);
+                extract($row);
+            ?>
                     <h3>Total Earnings</h3>
                     <p>All completed rides earnings</p>
-                    <div class="value">₹<?= number_format($total_earnings, 2); ?></div>
+                    <div class="value">₹<?= number_format($driver_amount, 2); ?></div>
                 </div>
 
                 <div class="card">
+                <?php
+                    $sql="select sum(driver_amount) as today_earnings from payments where date(payment_time)=CURDATE()";
+                    $result = mysqli_query($link, $sql);
+                    $row = mysqli_fetch_assoc($result);
+                    extract($row);
+                ?>
                     <h3>Today Earnings</h3>
                     <p>Completed rides today</p>
                     <div class="value">₹<?= number_format($today_earnings, 2); ?></div>
                 </div>
 
                 <div class="card">
+                     <?php
+                        $sql = "select count(b.driver_id) as Total_Completed_Rides from drivers d,bookings b where b.driver_id=d.id and b.status='completed' and d.id=$driver_id";
+                        $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
+                        $row = mysqli_fetch_assoc($result);
+                        extract($row);
+                        ?>
                     <h3>Completed Rides</h3>
                     <p>Total rides completed</p>
-                    <div class="value"><?= $total_completed; ?></div>
+                    <div class="value"><?= $Total_Completed_Rides; ?></div>
                 </div>
             </div>
 
@@ -324,10 +312,13 @@ $list_res = mysqli_query($link, $list_sql);
                     </thead>
 
                     <tbody>
-                        <?php if (mysqli_num_rows($list_res) > 0) { ?>
-                            <?php while ($row = mysqli_fetch_assoc($list_res)) { ?>
+                        <?php 
+                            $sql="select u.full_name,b.pickup_location,b.drop_location,b.fare,b.status,b.booking_time from users u,bookings b,drivers d where b.user_id=u.id and b.driver_id=$driver_id order by b.booking_time desc limit 5";
+                            $result = mysqli_query($link, $sql);
+                        if (mysqli_num_rows($result) > 0) { ?>
+                            <?php while ($row = mysqli_fetch_assoc($result)) { ?>
                                 <tr>
-                                    <td><?= htmlspecialchars($row['user_name']); ?></td>
+                                    <td><?= htmlspecialchars($row['full_name']); ?></td>
                                     <td><?= htmlspecialchars($row['pickup_location']); ?></td>
                                     <td><?= htmlspecialchars($row['drop_location']); ?></td>
                                     <td>₹<?= htmlspecialchars($row['fare']); ?></td>

@@ -23,6 +23,5 @@ if ($_FILES['profile_image']['error'] === 0) {
 }
 ?>
 <script>
-    alert("Data updated successfully.");
     window.location.href = "../profile.php?updated=success";
 </script>
