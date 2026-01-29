@@ -11,11 +11,20 @@ if(!isset($_SESSION['user_id'])){
 */
 
 $tmp_id = $_SESSION['user_id'];
-$sql = "SELECT b.booking_time,b.status,b.pickup_location,b.drop_location,b.distance_km,b.fare,b.driver_id 
-        FROM bookings b, users u 
-        WHERE u.id=b.user_id 
-        AND u.id=$tmp_id 
-        AND b.status!='completed'";
+$sql = "SELECT 
+    b.booking_time,
+    b.status,
+    b.pickup_location,
+    b.drop_location,
+    b.distance_km,
+    b.fare,
+    b.driver_id
+FROM bookings b
+WHERE b.user_id = $tmp_id
+AND b.status NOT IN ('completed', 'cancelled')
+ORDER BY b.booking_time DESC
+LIMIT 1;
+";
 
 $result = mysqli_query($link, $sql);
 ?>

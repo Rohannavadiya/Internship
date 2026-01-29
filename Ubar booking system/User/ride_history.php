@@ -1,19 +1,34 @@
 <?php
 session_start();
 include("../config/db.php");
-$user_name = $_SESSION['user_name'];
 
-/* ✅ Uncomment after login system ready
+/* Enable after login
 if(!isset($_SESSION['user_id'])){
     header("Location: ../auth/login.php");
     exit();
 }
 */
 
-$tmp_id = $_SESSION['user_id']; // demo
+$user_id   = $_SESSION['user_id'];
+$user_name = $_SESSION['user_name'] ?? "User";
 
-// Fetch user bookings
-$sql = "SELECT b.pickup_location,b.drop_location,b.distance_km,b.fare,b.status,b.booking_time FROM bookings b,users u WHERE b.user_id=u.id and u.id=$tmp_id";
+/* Fetch bookings with saved rating */
+$sql = "
+SELECT 
+    b.id AS booking_id,
+    b.pickup_location,
+    b.drop_location,
+    b.distance_km,
+    b.fare,
+    b.status,
+    b.booking_time,
+    b.driver_id,
+    IFNULL(r.rating, 0) AS saved_rating
+FROM bookings b
+LEFT JOIN ratings r ON r.booking_id = b.id
+WHERE b.user_id = $user_id
+ORDER BY b.booking_time DESC
+";
 $result = mysqli_query($link, $sql);
 ?>
 <!DOCTYPE html>
@@ -39,13 +54,11 @@ $result = mysqli_query($link, $sql);
             color: #111827;
         }
 
-        /* Layout */
         .wrapper {
             display: flex;
             min-height: 100vh;
         }
 
-        /* Sidebar */
         .sidebar {
             width: 260px;
             background: #fff;
@@ -68,49 +81,10 @@ $result = mysqli_query($link, $sql);
             border-radius: 16px;
             padding: 18px;
             margin-bottom: 25px;
-            border: 1px solid #f1f5f9;
-        }
-
-        .profile-box h3 {
-            font-size: 16px;
-            margin-bottom: 3px;
-        }
-
-        .profile-box p {
-            font-size: 13px;
-            color: #6b7280;
-        }
-
-        /* Main */
-        .main {
-            flex: 1;
-            padding: 30px;
-        }
-
-        /* Topbar */
-        .topbar {
-            background: #fff;
-            padding: 18px 22px;
-            border-radius: 18px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 25px;
-        }
-
-        .topbar h2 {
-            font-size: 20px;
-        }
-
-        .topbar span {
-            color: #facc15;
-            font-weight: 700;
         }
 
         .menu a {
             display: flex;
-            align-items: center;
             gap: 12px;
             padding: 12px 14px;
             border-radius: 14px;
@@ -118,44 +92,27 @@ $result = mysqli_query($link, $sql);
             color: #374151;
             font-weight: 500;
             margin-bottom: 10px;
-            transition: 0.25s;
         }
 
-        .menu a:hover {
-            background: #facc15;
-            color: #000;
-        }
-
+        .menu a:hover,
         .menu a.active {
             background: #facc15;
             color: #000;
         }
 
-
-        .container {
-            max-width: 1150px;
-            margin: auto;
-            padding: 30px 18px;
+        .main {
+            flex: 1;
+            padding: 30px;
         }
 
-        .header {
+        .topbar {
+            background: #fff;
+            padding: 18px 22px;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .header h2 {
-            font-size: 24px;
-        }
-
-        .header a {
-            text-decoration: none;
-            background: #facc15;
-            color: #000;
-            padding: 10px 18px;
-            border-radius: 12px;
-            font-weight: 600;
+            margin-bottom: 25px;
         }
 
         .card {
@@ -175,19 +132,13 @@ $result = mysqli_query($link, $sql);
 
         th,
         td {
-            padding: 12px 10px;
-            text-align: left;
+            padding: 12px;
             font-size: 14px;
         }
 
         th {
             background: #f9fafb;
             color: #6b7280;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        td {
-            border-bottom: 1px solid #f1f5f9;
         }
 
         .badge {
@@ -195,7 +146,11 @@ $result = mysqli_query($link, $sql);
             border-radius: 20px;
             font-size: 12px;
             font-weight: 700;
-            display: inline-block;
+        }
+
+        .completed {
+            background: #ecfdf5;
+            color: #047857;
         }
 
         .requested {
@@ -213,21 +168,25 @@ $result = mysqli_query($link, $sql);
             color: #a16207;
         }
 
-        .completed {
-            background: #ecfdf5;
-            color: #047857;
-        }
-
         .cancelled {
             background: #fef2f2;
             color: #b91c1c;
         }
 
-        .no-data {
-            text-align: center;
-            padding: 25px;
-            color: #6b7280;
-            font-weight: 600;
+        .star-rating {
+            display: inline-flex;
+            gap: 6px;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .star-rating span {
+            color: #d1d5db;
+            transition: .2s;
+        }
+
+        .star-rating span.filled {
+            color: #facc15;
         }
     </style>
 </head>
@@ -238,12 +197,10 @@ $result = mysqli_query($link, $sql);
         <!-- Sidebar -->
         <div class="sidebar">
             <div class="brand">CabRide</div>
-
             <div class="profile-box">
                 <h3>Hello, <?= htmlspecialchars($user_name); ?> 👋</h3>
                 <p>User Dashboard</p>
             </div>
-
             <div class="menu">
                 <a href="dashboard.php">🏠 Dashboard</a>
                 <a href="book_ride.php">🚖 Book Ride</a>
@@ -254,20 +211,12 @@ $result = mysqli_query($link, $sql);
             </div>
         </div>
 
-        <!-- Main Content -->
+        <!-- Main -->
         <div class="main">
 
-            <!-- Topbar -->
             <div class="topbar">
-                <h2>Welcome Back, <span><?= htmlspecialchars($user_name); ?></span></h2>
-                <div>
-                    <small style="color:#6b7280;">CabRide • User Panel</small>
-                </div>
-            </div>
-
-            <div class="header">
-                <h2>📜 Ride History</h2>
-                <!-- <a href="dashboard.php">⬅ Back</a> -->
+                <h2>Ride <span style="color:#facc15;">History</span></h2>
+                <small>CabRide • User Panel</small>
             </div>
 
             <div class="card">
@@ -280,41 +229,91 @@ $result = mysqli_query($link, $sql);
                             <th>Distance</th>
                             <th>Fare</th>
                             <th>Status</th>
-                            <th>Booking Time</th>
+                            <th>Time</th>
+                            <th>Rating</th>
                         </tr>
                     </thead>
                     <tbody>
-
                         <?php
                         if (mysqli_num_rows($result) > 0) {
                             $i = 1;
                             while ($row = mysqli_fetch_assoc($result)) {
-                                $status = $row['status'];
-
-                                echo "<tr>";
-                                echo "<td>" . $i++ . "</td>";
-                                echo "<td>" . htmlspecialchars($row['pickup_location']) . "</td>";
-                                echo "<td>" . htmlspecialchars($row['drop_location']) . "</td>";
-                                echo "<td>" . htmlspecialchars($row['distance_km']) . " km</td>";
-                                echo "<td>₹" . htmlspecialchars($row['fare']) . "</td>";
-                                echo "<td><span class='badge " . $status . "'>" . ucfirst($status) . "</span></td>";
-                                echo "<td>" . htmlspecialchars($row['booking_time']) . "</td>";
-                                echo "</tr>";
+                        ?>
+                                <tr>
+                                    <td><?= $i++; ?></td>
+                                    <td><?= htmlspecialchars($row['pickup_location']); ?></td>
+                                    <td><?= htmlspecialchars($row['drop_location']); ?></td>
+                                    <td><?= $row['distance_km']; ?> km</td>
+                                    <td>₹<?= $row['fare']; ?></td>
+                                    <td><span class="badge <?= $row['status']; ?>"><?= ucfirst($row['status']); ?></span></td>
+                                    <td><?= date("d M Y, h:i A", strtotime($row['booking_time'])); ?></td>
+                                    <td>
+                                        <?php if ($row['status'] == "completed") { ?>
+                                            <div class="star-rating"
+                                                data-booking="<?= $row['booking_id']; ?>"
+                                                data-driver="<?= $row['driver_id']; ?>"
+                                                data-rated="<?= $row['saved_rating']; ?>">
+                                                <?php for ($s = 1; $s <= 5; $s++) { ?>
+                                                    <span data-value="<?= $s; ?>">★</span>
+                                                <?php } ?>
+                                            </div>
+                                        <?php } else {
+                                            echo "-";
+                                        } ?>
+                                    </td>
+                                </tr>
+                        <?php
                             }
                         } else {
-                            echo "<tr><td colspan='7' class='no-data'>❌ No rides found! Book your first ride 🚖</td></tr>";
+                            echo "<tr><td colspan='8' style='text-align:center;'>No rides found</td></tr>";
                         }
                         ?>
-
                     </tbody>
                 </table>
             </div>
 
         </div>
-
-
     </div>
-    </div>
+
+    <script>
+document.querySelectorAll(".star-rating").forEach(box => {
+
+    const stars   = box.querySelectorAll("span");
+    const booking = box.dataset.booking;
+    const driver  = box.dataset.driver;
+    const saved   = parseInt(box.dataset.rated);
+
+    // show saved rating
+    if(saved > 0){
+        stars.forEach(star => {
+            if(star.dataset.value <= saved){
+                star.classList.add("filled");
+            }
+        });
+    }
+
+    stars.forEach(star => {
+        star.addEventListener("click", () => {
+
+            const rating = star.dataset.value;
+
+            // fill stars
+            stars.forEach(s => {
+                s.classList.toggle("filled", s.dataset.value <= rating);
+            });
+
+            // save rating (NO submit button)
+            fetch("submit/save_rating.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: `booking_id=${booking}&driver_id=${driver}&rating=${rating}`
+            });
+        });
+    });
+});
+</script>
 
 
 </body>
