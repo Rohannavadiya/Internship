@@ -8,26 +8,11 @@ if(!isset($_SESSION['admin_id'])){
     exit();
 }
 */
-
-// ====== COUNTS ======
-$total_users = mysqli_fetch_assoc(mysqli_query($link, "SELECT COUNT(*) c FROM users"))['c'];
-$total_drivers = mysqli_fetch_assoc(mysqli_query($link, "SELECT COUNT(*) c FROM drivers"))['c'];
-$active_drivers = mysqli_fetch_assoc(mysqli_query($link, "SELECT COUNT(*) c FROM drivers WHERE status='approved'"))['c'];
-$total_rides = mysqli_fetch_assoc(mysqli_query($link, "SELECT COUNT(*) c FROM bookings"))['c'];
-$completed_rides = mysqli_fetch_assoc(mysqli_query($link, "SELECT COUNT(*) c FROM bookings WHERE status='completed'"))['c'];
+$admin_name=$_SESSION['admin_name'];
+$admin_id=$_SESSION['admin_id'];
 
 // ====== TODAY EARNINGS ======
-$today = date("Y-m-d");
-$pay = mysqli_fetch_assoc(mysqli_query($link, "
-    SELECT IFNULL(SUM(amount),0) total
-    FROM payments
-    WHERE DATE(payment_time)='$today'
-    AND payment_status='paid'
-"));
 
-$total_amount = $pay['total'];
-$driver_amount = $total_amount * 0.70;
-$platform_amount = $total_amount * 0.30;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -55,6 +40,23 @@ $platform_amount = $total_amount * 0.30;
         .wrapper {
             display: flex;
             min-height: 100vh
+        }
+ .profile-box {
+            background: #f9fafb;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 25px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .profile-box h3 {
+            font-size: 16px;
+            margin-bottom: 3px;
+        }
+
+        .profile-box p {
+            font-size: 13px;
+            color: #6b7280;
         }
 
         /* Sidebar */
@@ -94,18 +96,27 @@ $platform_amount = $total_amount * 0.30;
             padding: 30px
         }
 
-        /* Topbar */
+         /* Topbar */
         .topbar {
             background: #fff;
             padding: 18px 22px;
             border-radius: 18px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, .06);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             margin-bottom: 25px;
         }
 
-        .topbar h2 span {
-            color: #facc15
+        .topbar h2 {
+            font-size: 20px;
         }
+
+        .topbar span {
+            color: #facc15;
+            font-weight: 700;
+        }
+
 
         /* Cards */
         .grid {
@@ -176,6 +187,10 @@ $platform_amount = $total_amount * 0.30;
         <!-- Sidebar -->
         <div class="sidebar">
             <div class="brand">CabRide Admin</div>
+            <div class="profile-box">
+                <h3>Hello, <?= htmlspecialchars($admin_name); ?> 👋</h3>
+                <p>Admin Dashboard</p>
+            </div>
             <div class="menu">
                 <a class="active" href="dashboard.php">📊 Dashboard</a>
                 <a href="users.php">👤 Users</a>
@@ -192,35 +207,75 @@ $platform_amount = $total_amount * 0.30;
 
             <div class="topbar">
                 <h2>Welcome, <span>Admin</span></h2>
+                <small style="color:#6b7280;">CabRide • Admin Panel</small>
             </div>
 
             <div class="grid">
+                <?php 
+                    $sql="select count(id) as Total_users from users";
+                    $result = mysqli_query($link,$sql);
+                    $row=mysqli_fetch_assoc($result);
+                    extract($row);
+
+                    $sql="select count(id) as Total_drivers from drivers";
+                    $result = mysqli_query($link,$sql);
+                    $row=mysqli_fetch_assoc($result);
+                    extract($row);
+
+                    $sql="select count(id) as Active_drivers from drivers where availability='online'";
+                    $result = mysqli_query($link,$sql);
+                    $row=mysqli_fetch_assoc($result);
+                    extract($row);
+
+                    $sql="select count(*) as Total_rides from bookings";
+                    $result = mysqli_query($link,$sql);
+                    $row=mysqli_fetch_assoc($result);
+                    extract($row);
+
+                    $sql="select count(*) as Completed_rides from bookings where status='completed'";
+                    $result = mysqli_query($link,$sql);
+                    $row=mysqli_fetch_assoc($result);
+                    extract($row);
+                ?>
                 <div class="card">
                     <h3>Total Users</h3>
-                    <div class="value"><?= $total_users ?></div>
+                    <div class="value"><?= $Total_users ?></div>
                 </div>
                 <div class="card">
                     <h3>Total Drivers</h3>
-                    <div class="value"><?= $total_drivers ?></div>
+                    <div class="value"><?= $Total_drivers ?></div>
                 </div>
                 <div class="card">
                     <h3>Active Drivers</h3>
-                    <div class="value"><?= $active_drivers ?></div>
+                    <div class="value"><?= $Active_drivers ?></div>
                 </div>
                 <div class="card">
                     <h3>Total Rides</h3>
-                    <div class="value"><?= $total_rides ?></div>
+                    <div class="value"><?= $Total_rides ?></div>
                 </div>
                 <div class="card">
                     <h3>Completed Rides</h3>
-                    <div class="value"><?= $completed_rides ?></div>
+                    <div class="value"><?= $Completed_rides ?></div>
                 </div>
             </div>
 
             <div class="earnings">
+                <?php 
+
+                $today = date("Y-m-d");
+                $sql="select sum(platform_amount) as Today_earnings from payments where date(payment_time)='$today' and payment_status='paid'";
+                $result = mysqli_query($link,$sql);
+                $row=mysqli_fetch_assoc($result);
+                extract($row);
+
+                $sql="select sum(driver_amount) as driver_amount,sum(platform_amount) as platform_amount from payments";
+                $result = mysqli_query($link,$sql);
+                    $row=mysqli_fetch_assoc($result);
+                    extract($row);
+                ?>
                 <div class="card">
                     <h3>Today's Total Earnings</h3>
-                    <div class="money green">₹<?= number_format($total_amount, 2) ?></div>
+                    <div class="money green">₹<?= number_format($Today_earnings, 2) ?></div>
                 </div>
                 <div class="card">
                     <h3>Driver Share (70%)</h3>

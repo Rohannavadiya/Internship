@@ -5,7 +5,7 @@ extract($_POST);
 $driver_id = $_SESSION['driver_id'];
 $driver_amount   = $fare * 0.70;
 $platform_amount = $fare * 0.30;
-$sql = "INSERT INTO payments(booking_id,amount,payment_method,payment_status,driver_amount,platform_amount) VALUES ($booking_id,$fare,'$payment_method','paid',$driver_amount,$platform_amount)";
+$sql = "INSERT INTO payments(booking_id,driver_id,amount,payment_method,payment_status,driver_amount,platform_amount) VALUES ($booking_id,$driver_id,$fare,'$payment_method','paid',$driver_amount,$platform_amount)";
 if (mysqli_query($link, $sql)) {
 $sql = "UPDATE bookings 
                       SET status='completed'
