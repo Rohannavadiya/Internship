@@ -195,6 +195,7 @@ $admin_id=$_SESSION['admin_id'];
                 <a class="active" href="dashboard.php">📊 Dashboard</a>
                 <a href="users.php">👤 Users</a>
                 <a href="drivers.php">🚖 Drivers</a>
+                <a href="admins.php">👑 Admins</a>
                 <a href="rides.php">📍 Rides</a>
                 <a href="payments.php">💰 Payments</a>
                 <a href="ratings.php">⭐ Ratings</a>
