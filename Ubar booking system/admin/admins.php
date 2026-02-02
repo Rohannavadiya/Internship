@@ -8,30 +8,15 @@ if(!isset($_SESSION['admin_id'])){
     exit();
 }
 */
+$admin_id   = $_SESSION['admin_id'];
 $admin_name = $_SESSION['admin_name'];
-$admin_id = $_SESSION['admin_id'];
-// approve / block driver
-if (isset($_GET['action']) && isset($_GET['id'])) {
-    $id = intval($_GET['id']);
-    $action = $_GET['action'];
 
-    if ($action == 'approve') {
-        mysqli_query($link, "UPDATE drivers SET status='approved' WHERE id=$id");
-    }
-    if ($action == 'block') {
-        mysqli_query($link, "UPDATE drivers SET status='blocked' WHERE id=$id");
-    }
-    if ($action == 'unblock') {
-        mysqli_query($link, "UPDATE drivers SET status='approved' WHERE id=$id");
-    }
-
-    header("Location: drivers.php");
-    exit();
-}
-
-// fetch drivers
-$sql = "SELECT id, full_name, email, mobile, license_number,vehicle_type, availability, status, created_at FROM drivers ORDER BY created_at DESC";
-$result = mysqli_query($link, $sql);
+/* Fetch all admins */
+$result = mysqli_query($link,"
+    SELECT id, name, email, created_at
+    FROM admins
+    ORDER BY created_at DESC
+");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -291,8 +276,8 @@ $result = mysqli_query($link, $sql);
             <div class="menu">
                 <a href="dashboard.php">📊 Dashboard</a>
                 <a href="users.php">👤 Users</a>
-                <a class="active" href="drivers.php">🚖 Drivers</a>
-                <a href="admins.php">👑 Admins</a>
+                <a href="drivers.php">🚖 Drivers</a>
+                <a class="active" href="admins.php">👑 Admins</a>
                 <a href="rides.php">📍 Rides</a>
                 <a href="payments.php">💰 Payments</a>
                 <a href="ratings.php">⭐ Ratings</a>
@@ -303,78 +288,51 @@ $result = mysqli_query($link, $sql);
         <!-- Main -->
         <div class="main">
 
+
             <div class="topbar">
-                <h2>Welcome, <span>Admin</span></h2>
-                <small style="color:#6b7280;">CabRide • Admin Panel</small>
+                <h2>Manage <span>Admins</span></h2>
+                <small>CabRide • Admin Panel</small>
             </div>
 
             <div class="card">
-                <h2>Manage <span style="color:#facc15">Drivers</span></h2>
                 <table>
                     <thead>
                         <tr>
                             <th>#</th>
                             <th>Name</th>
                             <th>Email</th>
-                            <th>Mobile</th>
-                            <th>License</th>
-                            <th>Vehicle</th>
-                            <th>Availability</th>
-                            <th>Status</th>
                             <th>Joined</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
 
-                        <?php
-                        $i = 1;
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            extract($row);
-                        ?>
+                        <?php $i = 1;
+                        while ($row = mysqli_fetch_assoc($result)) { ?>
                             <tr>
                                 <td><?= $i++; ?></td>
-                                <td><?= $full_name; ?></td>
-                                <td><?= $email; ?></td>
-                                <td><?= $mobile; ?></td>
-                                <td><?= $license_number; ?></td>
-                                <td><?= $vehicle_type; ?></td>
-                                <td class="<?= $availability; ?>">
-                                    <?= $availability; ?>
-                                </td>
+                                <td><?= htmlspecialchars($row['name']); ?></td>
+                                <td><?= htmlspecialchars($row['email']); ?></td>
+                                <td><?= date("d M Y", strtotime($row['created_at'])); ?></td>
                                 <td>
-                                    <span class="badge <?= $status; ?>">
-                                        <?= $status; ?>
-                                    </span>
-                                </td>
-                                <td><?= date("d M Y", strtotime($created_at)); ?></td>
-                                <td>
-                                    <?php if ($status == 'approved') { ?>
-                                        <a class="action-btn btn-block"
-                                            href="submit/approved_blocked_drivers.php?action=blocked&driver_id=<?= $id; ?>"
-                                            onclick="return confirm('Block this driver?')">
-                                            <i class="fa fa-ban"></i>
-                                        </a>
-                                    <?php } else { ?>
-                                        <a class="action-btn btn-approve"
-                                            href="submit/approved_blocked_drivers.php?action=approved&driver_id=<?= $id; ?>"
-                                            onclick="return confirm('Approve this driver?')">
-                                            <i class="fa fa-check"></i>
-                                        </a>
-                                    <?php } ?>
-
-                                    <a class="action-btn btn-edit"
-                                        href="edit_drivers.php?driver_id=<?= $id; ?>">
+                                    <!-- Edit allowed for all -->
+                                    <a href="edit_admins.php?admin_id=<?= $row['id']; ?>" class="action-btn btn-edit">
                                         <i class="fa fa-pen-to-square"></i>
                                     </a>
 
-                                    <a class="action-btn btn-delete"
-                                        href="submit/delete_drivers.php?drivers_id=<?= $id; ?>"
-                                        onclick="return confirm('Delete this driver permanently?')">
-                                        <i class="fa fa-trash"></i>
-                                    </a>
+                                    <!-- Delete NOT allowed for self -->
+                                    <?php if ($row['id'] != $admin_id) { ?>
+                                        <a href="submit/delete_admin.php?admin_id=<?= $row['id']; ?>"
+                                            onclick="return confirm('Delete this admin?')"
+                                            class="action-btn btn-delete">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    <?php } else { ?>
+                                        <span class="action-btn btn-disabled">
+                                            <i class="fa fa-user-shield"></i> You
+                                        </span>
+                                    <?php } ?>
                                 </td>
-
                             </tr>
                         <?php } ?>
 

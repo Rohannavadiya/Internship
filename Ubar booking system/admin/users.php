@@ -12,8 +12,8 @@ $admin_name = $_SESSION['admin_name'];
 $admin_id = $_SESSION['admin_id'];
 
 // fetch users
-$sql="SELECT id, full_name, email, mobile, status, created_at FROM users ORDER BY created_at DESC";
-$result = mysqli_query($link,$sql);
+$sql = "SELECT id, full_name, email, mobile, status, created_at FROM users ORDER BY created_at DESC";
+$result = mysqli_query($link, $sql);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -179,6 +179,65 @@ $result = mysqli_query($link,$sql);
             color: #facc15;
         }
 
+        /* Action Buttons */
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            text-decoration: none;
+            margin-right: 6px;
+            transition: 0.2s;
+        }
+
+        /* Activate */
+        .btn-activate {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .btn-activate:hover {
+            background: #047857;
+            color: #fff;
+        }
+
+        /* Deactivate */
+        .btn-deactivate {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .btn-deactivate:hover {
+            background: #c2410c;
+            color: #fff;
+        }
+
+        /* Edit */
+        .btn-edit {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .btn-edit:hover {
+            background: #1d4ed8;
+            color: #fff;
+        }
+
+        /* Delete */
+        .btn-delete {
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+
+        .btn-delete:hover {
+            background: #b91c1c;
+            color: #fff;
+        }
+
         @media(max-width:900px) {
             .sidebar {
                 display: none
@@ -253,16 +312,34 @@ $result = mysqli_query($link,$sql);
                                     </span>
                                 </td>
                                 <td><?= date("d M Y", strtotime($created_at)); ?></td>
-                                <td>
-                                    <a class="btn btn-toggle"
+                                <td style="white-space:nowrap;">
+                                    <!-- Activate / Deactivate -->
+                                    <a
                                         href="submit/active_inactive_user.php?user_id=<?= $id; ?>"
+                                        class="action-btn <?= $status == 'active' ? 'btn-deactivate' : 'btn-activate'; ?>"
+                                        title="<?= $status == 'active' ? 'Deactivate User' : 'Activate User'; ?>"
                                         onclick="return confirm('Change user status?')">
-                                        <?= $status == 'active' ? 'Deactivate' : 'Activate'; ?>
-                                    </a> &nbsp;&nbsp;
-                                    <a href="edit_users.php?user_id=<?= $id; ?>" class="btn btn-toggle">✏️ Edit</a>
-                                    <a href="submit/delete_users.php?user_id=<?= $id; ?>" class="btn btn-toggle"
-                                        onclick="return confirm('Do you want to delete user?')">delete</a>
+                                        <?= $status == 'active' ? '⛔' : '✔'; ?>
+                                    </a>
+
+                                    <!-- Edit -->
+                                    <a
+                                        href="edit_users.php?user_id=<?= $id; ?>"
+                                        class="action-btn btn-edit"
+                                        title="Edit User">
+                                        ✏️
+                                    </a>
+
+                                    <!-- Delete -->
+                                    <a
+                                        href="submit/delete_users.php?user_id=<?= $id; ?>"
+                                        class="action-btn btn-delete"
+                                        title="Delete User"
+                                        onclick="return confirm('Do you want to delete this user?')">
+                                        🗑️
+                                    </a>
                                 </td>
+
                             </tr>
                         <?php } ?>
 

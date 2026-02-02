@@ -149,6 +149,13 @@ body{
     color:#6b7280;
     font-size:14px;
 }
+.admin-link{
+    font-size:14px;
+    color:#9ca3af;        /* gray */
+}
+.admin-link:hover{
+    color:#facc15;       /* yellow on hover */
+}
 
 /* Responsive */
 @media(max-width:900px){
@@ -173,6 +180,7 @@ body{
         <a href="Auth/about.php">About</a>
         <a href="Auth/services.php">Services</a>
         <a href="Auth/login.php">Login</a>
+        <a href="Auth/admin_login.php" class="admin-link">Admin</a>
     </div>
 </div>
 
