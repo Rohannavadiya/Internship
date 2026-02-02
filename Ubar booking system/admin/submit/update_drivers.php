@@ -1,0 +1,7 @@
+<?php
+extract($_POST);
+include("../../config/db.php");
+$sql="UPDATE drivers SET full_name='$full_name',mobile=$mobile,vehicle_type='$vehicle_type',availability='$availability',status='$status' WHERE id=$driver_id";
+mysqli_query($link, $sql);
+header('Location:../drivers.php');
+?>

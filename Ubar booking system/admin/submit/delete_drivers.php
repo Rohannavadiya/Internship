@@ -1,0 +1,7 @@
+<?php
+include("../../config/db.php");
+extract($_REQUEST);
+$sql="delete from drivers where id=$user_id";
+mysqli_query($link, $sql);
+header("Location: ../drivers.php");
+?>

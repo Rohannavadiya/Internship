@@ -1,19 +1,19 @@
 <?php
 session_start();
 include("../config/db.php");
-
+extract($_REQUEST);
 /* after admin login
 if(!isset($_SESSION['admin_id'])){
     header("Location: login.php");
     exit();
 }
 */
-$admin_name = $_SESSION['admin_name'];
-$admin_id = $_SESSION['admin_id'];
-
-// fetch users
-$sql="SELECT id, full_name, email, mobile, status, created_at FROM users ORDER BY created_at DESC";
-$result = mysqli_query($link,$sql);
+$admin_name=$_SESSION['admin_name'];
+$admin_id=$_SESSION['admin_id'];
+$sql="select * from users where id=$user_id";
+$result=mysqli_query($link,$sql);
+$row=mysqli_fetch_assoc($result);
+extract($row);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -42,8 +42,7 @@ $result = mysqli_query($link,$sql);
             display: flex;
             min-height: 100vh
         }
-
-        .profile-box {
+.profile-box {
             background: #f9fafb;
             border-radius: 16px;
             padding: 18px;
@@ -98,7 +97,7 @@ $result = mysqli_query($link,$sql);
             padding: 30px
         }
 
-        /* Topbar */
+         /* Topbar */
         .topbar {
             background: #fff;
             padding: 18px 22px;
@@ -120,63 +119,65 @@ $result = mysqli_query($link,$sql);
         }
 
 
-        /* Table */
+        /* Card */
         .card {
             background: #fff;
-            padding: 18px;
+            padding: 22px;
             border-radius: 18px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, .06);
+            max-width: 700px
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .form-group {
+            margin-bottom: 14px
         }
 
-        th,
-        td {
-            padding: 12px;
+        label {
             font-size: 14px;
-            text-align: left;
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: block
         }
 
-        th {
-            background: #f9fafb;
-            color: #6b7280;
+        input,
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid #e5e7eb;
+            font-size: 14px
         }
 
-        tr:not(:last-child) td {
-            border-bottom: 1px solid #f1f5f9;
+        input[readonly] {
+            background: #f3f4f6
         }
 
-        .badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .active {
-            background: #ecfdf5;
-            color: #047857
-        }
-
-        .inactive {
-            background: #fef2f2;
-            color: #b91c1c
+        input:focus,
+        select:focus {
+            border-color: #facc15;
+            box-shadow: 0 0 0 3px rgba(250, 204, 21, .25);
+            outline: none
         }
 
         .btn {
-            padding: 6px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 700;
-            text-decoration: none;
-        }
-
-        .btn-toggle {
+            padding: 12px 18px;
+            border-radius: 14px;
             background: #000;
             color: #facc15;
+            border: none;
+            font-weight: 800;
+            cursor: pointer
+        }
+
+        .btn-outline {
+            display: inline-block;
+            margin-left: 10px;
+            padding: 12px 18px;
+            border-radius: 14px;
+            border: 2px solid #facc15;
+            text-decoration: none;
+            color: #000;
+            font-weight: 800
         }
 
         @media(max-width:900px) {
@@ -188,6 +189,7 @@ $result = mysqli_query($link,$sql);
                 padding: 18px
             }
         }
+        
     </style>
 </head>
 
@@ -217,57 +219,41 @@ $result = mysqli_query($link,$sql);
         <div class="main">
 
             <div class="topbar">
-                <h2>Welcome, <span>Admin</span></h2>
+                 <h2>Welcome, <span>Admin</span></h2>
                 <small style="color:#6b7280;">CabRide • Admin Panel</small>
             </div>
 
             <div class="card">
-                <h2>Manage <span>Users</span></h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Mobile</th>
-                            <th>Status</th>
-                            <th>Joined</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <h3>👤 User Details</h3>
+                <br>
 
-                        <?php
-                        $i = 1;
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            extract($row);
-                        ?>
-                            <tr>
-                                <td><?= $i++; ?></td>
-                                <td><?= $full_name; ?></td>
-                                <td><?= $email; ?></td>
-                                <td><?= $mobile; ?></td>
-                                <td>
-                                    <span class="badge <?= $status; ?>">
-                                        <?= $status; ?>
-                                    </span>
-                                </td>
-                                <td><?= date("d M Y", strtotime($created_at)); ?></td>
-                                <td>
-                                    <a class="btn btn-toggle"
-                                        href="submit/active_inactive_user.php?user_id=<?= $id; ?>"
-                                        onclick="return confirm('Change user status?')">
-                                        <?= $status == 'active' ? 'Deactivate' : 'Activate'; ?>
-                                    </a> &nbsp;&nbsp;
-                                    <a href="edit_users.php?user_id=<?= $id; ?>" class="btn btn-toggle">✏️ Edit</a>
-                                    <a href="submit/delete_users.php?user_id=<?= $id; ?>" class="btn btn-toggle"
-                                        onclick="return confirm('Do you want to delete user?')">delete</a>
-                                </td>
-                            </tr>
-                        <?php } ?>
+                <form method="POST" action="submit/update_users.php">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" name="full_name" value="<?= $full_name; ?>" required>
+                    </div>
 
-                    </tbody>
-                </table>
+                    <div class="form-group">
+                        <label>Email (readonly)</label>
+                        <input type="email" value="<?= $email; ?>" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mobile</label>
+                        <input type="text" name="mobile" value="<?= $mobile; ?>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="status">
+                            <option value="active" <?= $status == 'active' ? 'selected' : ''; ?>>Active</option>
+                            <option value="inactive" <?= $status == 'inactive' ? 'selected' : ''; ?>>Inactive</option>
+                        </select>
+                    </div>
+                    <input type="hidden" name="user_id" value="<?= $id; ?>">
+                    <button type="submit" name="update_user" class="btn">✅ Update User</button>
+                    <a href="users.php" class="btn-outline">⬅ Back</a>
+                </form>
             </div>
 
         </div>

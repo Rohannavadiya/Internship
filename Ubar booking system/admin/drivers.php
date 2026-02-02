@@ -30,12 +30,8 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
 }
 
 // fetch drivers
-$result = mysqli_query($link, "
-    SELECT id, full_name, email, mobile, license_number,
-           vehicle_type, availability, status, created_at
-    FROM drivers
-    ORDER BY created_at DESC
-");
+$sql="SELECT id, full_name, email, mobile, license_number,vehicle_type, availability, status, created_at FROM drivers ORDER BY created_at DESC";
+$result = mysqli_query($link,$sql);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -290,37 +286,33 @@ $result = mysqli_query($link, "
                         <?php
                         $i = 1;
                         while ($row = mysqli_fetch_assoc($result)) {
+                            extract($row);
                         ?>
                             <tr>
                                 <td><?= $i++; ?></td>
-                                <td><?= htmlspecialchars($row['full_name']); ?></td>
-                                <td><?= htmlspecialchars($row['email']); ?></td>
-                                <td><?= htmlspecialchars($row['mobile']); ?></td>
-                                <td><?= htmlspecialchars($row['license_number']); ?></td>
-                                <td><?= $row['vehicle_type']; ?></td>
-                                <td class="<?= $row['availability']; ?>">
-                                    <?= ucfirst($row['availability']); ?>
+                                <td><?= $full_name; ?></td>
+                                <td><?= $email; ?></td>
+                                <td><?= $mobile; ?></td>
+                                <td><?= $license_number; ?></td>
+                                <td><?= $vehicle_type; ?></td>
+                                <td class="<?= $availability; ?>">
+                                    <?= $availability; ?>
                                 </td>
                                 <td>
-                                    <span class="badge <?= $row['status']; ?>">
-                                        <?= ucfirst($row['status']); ?>
+                                    <span class="badge <?= $status; ?>">
+                                        <?= $status; ?>
                                     </span>
                                 </td>
-                                <td><?= date("d M Y", strtotime($row['created_at'])); ?></td>
+                                <td><?= date("d M Y", strtotime($created_at)); ?></td>
                                 <td>
-                                    <?php if ($row['status'] == "pending") { ?>
-                                        <a class="btn btn-approve"
-                                            href="drivers.php?action=approve&id=<?= $row['id']; ?>"
-                                            onclick="return confirm('Approve this driver?')">Approve</a>
-                                    <?php } elseif ($row['status'] == "approved") { ?>
-                                        <a class="btn btn-block"
-                                            href="drivers.php?action=block&id=<?= $row['id']; ?>"
-                                            onclick="return confirm('Block this driver?')">Block</a>
-                                    <?php } else { ?>
-                                        <a class="btn btn-unblock"
-                                            href="drivers.php?action=unblock&id=<?= $row['id']; ?>"
-                                            onclick="return confirm('Unblock this driver?')">Unblock</a>
-                                    <?php } ?>
+                                    <a class="btn btn-toggle"
+                                        href="submit/approved_blocked_drivers.php?driver_id=<?= $id; ?>"
+                                        onclick="return confirm('Change user status?')">
+                                        <?= $status == 'approved' ? 'Blocked' : 'Approved'; ?>
+                                    </a> &nbsp;&nbsp;
+                                    <a href="edit_drivers.php?driver_id=<?= $id; ?>" class="btn btn-toggle">✏️ Edit</a>
+                                    <a href="submit/delete_drivers.php?drivers_id=<?= $id; ?>" class="btn btn-toggle"
+                                        onclick="return confirm('Do you want to delete drivers?')">delete</a>
                                 </td>
                             </tr>
                         <?php } ?>
