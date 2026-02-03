@@ -2,12 +2,12 @@
 session_start();
 include("../config/db.php");
 
-/* ✅ Enable after login system ready
-if(!isset($_SESSION['driver_id'])){
-    header("Location: ../auth/login.php");
-    exit();
-}
-*/
+if (!isset($_SESSION['driver_id'])) { ?>
+    <script>
+        alert("Login required!");
+        window.location.href = "../auth/login.php";
+    </script>
+<?php }
 
 $driver_id   = $_SESSION['driver_id'];
 $driver_name = $_SESSION['driver_name'];
@@ -20,7 +20,7 @@ if (isset($_REQUEST['sussess'])) {
 }
 
 /* ✅ Fetch Requested Rides */
-$sql="select b.*,u.full_name,u.mobile from bookings b,users u,drivers d where b.user_id=u.id and b.status='requested' and d.availability='online' ORDER BY b.booking_time DESC";
+$sql = "select b.*,u.full_name,u.mobile from bookings b,users u,drivers d where b.user_id=u.id and b.status='requested' and d.availability='online' ORDER BY b.booking_time DESC";
 
 $result = mysqli_query($link, $sql);
 ?>

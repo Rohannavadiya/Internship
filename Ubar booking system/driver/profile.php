@@ -2,12 +2,12 @@
 session_start();
 include("../config/db.php");
 
-/* ✅ Enable after driver login
-if(!isset($_SESSION['driver_id'])){
-    header("Location: ../auth/login.php");
-    exit();
-}
-*/
+if (!isset($_SESSION['driver_id'])) { ?>
+    <script>
+        alert("Login required!");
+        window.location.href = "../auth/login.php";
+    </script>
+<?php }
 
 $driver_id   = $_SESSION['driver_id']; // demo
 $driver_name = $_SESSION['driver_name'];
@@ -268,7 +268,7 @@ if (mysqli_num_rows($result) == 1) {
             <div class="brand">CabRide</div>
 
             <div class="profile-box">
-                <h3>Hello, <?= htmlspecialchars($driver_name); ?> 👋</h3>
+                <h3>Hello, <?= $driver_name; ?> 👋</h3>
                 <p>Driver Dashboard</p>
             </div>
 
@@ -286,7 +286,7 @@ if (mysqli_num_rows($result) == 1) {
         <div class="main">
 
             <div class="topbar">
-                <h2>Welcome Back, <span><?= htmlspecialchars($full_name); ?></span></h2>
+                <h2>Welcome Back, <span><?= $full_name; ?></span></h2>
                 <small style="color:#6b7280;">CabRide • Driver Panel</small>
             </div>
 

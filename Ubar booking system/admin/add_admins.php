@@ -2,12 +2,13 @@
 session_start();
 include("../config/db.php");
 
-/* protect page after login
-if(!isset($_SESSION['admin_id'])){
-    header("Location: login.php");
-    exit();
-}
-*/
+if (!isset($_SESSION['admin_id'])) { ?>
+    <script>
+        alert("Login required!");
+        window.location.href = "../auth/login.php";
+    </script>
+<?php }
+
 $admin_name = $_SESSION['admin_name'];
 $logged_admin_id = $_SESSION['admin_id'];
 
@@ -179,7 +180,7 @@ $logged_admin_id = $_SESSION['admin_id'];
         <div class="sidebar">
             <div class="brand">CabRide Admin</div>
             <div class="profile-box">
-                <h3>Hello, <?= htmlspecialchars($admin_name); ?> 👋</h3>
+                <h3>Hello, <?= $admin_name; ?> 👋</h3>
                 <p>Admin Dashboard</p>
             </div>
             <div class="menu">
@@ -208,7 +209,7 @@ $logged_admin_id = $_SESSION['admin_id'];
                         <label>Name</label>
                         <input type="text" name="name" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Password</label>
                         <input type="password" name="password" required>

@@ -2,13 +2,13 @@
 session_start();
 include("../config/db.php");
 $user_name = $_SESSION['user_name'];
-/* ✅ Uncomment after login system ready
-if(!isset($_SESSION['user_id'])){
-    header("Location: ../auth/login.php");
-    exit();
-}
-*/
-?>
+
+if (!isset($_SESSION['user_id'])) { ?>
+    <script>
+        alert("Login required!");
+        window.location.href = "../auth/login.php";
+    </script>
+<?php } ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,181 +20,197 @@ if(!isset($_SESSION['user_id'])){
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family:'Poppins',sans-serif;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
-        body{
-            background:#f9fafb;
-            color:#111827;
+
+        body {
+            background: #f9fafb;
+            color: #111827;
         }
 
         /* Layout */
-        .wrapper{
-            display:flex;
-            min-height:100vh;
+        .wrapper {
+            display: flex;
+            min-height: 100vh;
         }
 
         /* Sidebar */
-        .sidebar{
-            width:260px;
-            background:#fff;
-            box-shadow:0 10px 30px rgba(0,0,0,0.08);
-            padding:25px 20px;
-            position:sticky;
-            top:0;
-            height:100vh;
-        }
-        .brand{
-            font-size:22px;
-            font-weight:700;
-            color:#facc15;
-            margin-bottom:25px;
-        }
-        .profile-box{
-            background:#f9fafb;
-            border-radius:16px;
-            padding:18px;
-            margin-bottom:25px;
-            border:1px solid #f1f5f9;
-        }
-        .profile-box h3{
-            font-size:16px;
-            margin-bottom:3px;
-        }
-        .profile-box p{
-            font-size:13px;
-            color:#6b7280;
+        .sidebar {
+            width: 260px;
+            background: #fff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            padding: 25px 20px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
         }
 
-        .menu a{
-            display:flex;
-            align-items:center;
-            gap:12px;
-            padding:12px 14px;
-            border-radius:14px;
-            text-decoration:none;
-            color:#374151;
-            font-weight:500;
-            margin-bottom:10px;
-            transition:0.25s;
+        .brand {
+            font-size: 22px;
+            font-weight: 700;
+            color: #facc15;
+            margin-bottom: 25px;
         }
-        .menu a:hover{
-            background:#facc15;
-            color:#000;
+
+        .profile-box {
+            background: #f9fafb;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 25px;
+            border: 1px solid #f1f5f9;
         }
-        .menu a.active{
-            background:#facc15;
-            color:#000;
+
+        .profile-box h3 {
+            font-size: 16px;
+            margin-bottom: 3px;
+        }
+
+        .profile-box p {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            text-decoration: none;
+            color: #374151;
+            font-weight: 500;
+            margin-bottom: 10px;
+            transition: 0.25s;
+        }
+
+        .menu a:hover {
+            background: #facc15;
+            color: #000;
+        }
+
+        .menu a.active {
+            background: #facc15;
+            color: #000;
         }
 
         /* Main */
-        .main{
-            flex:1;
-            padding:30px;
+        .main {
+            flex: 1;
+            padding: 30px;
         }
 
         /* Topbar */
-        .topbar{
-            background:#fff;
-            padding:18px 22px;
-            border-radius:18px;
-            box-shadow:0 10px 30px rgba(0,0,0,0.06);
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            margin-bottom:25px;
+        .topbar {
+            background: #fff;
+            padding: 18px 22px;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
         }
-        .topbar h2{
-            font-size:20px;
+
+        .topbar h2 {
+            font-size: 20px;
         }
-        .topbar span{
-            color:#facc15;
-            font-weight:700;
+
+        .topbar span {
+            color: #facc15;
+            font-weight: 700;
         }
 
         /* Page Content Container */
-        .container{
-            max-width:1100px;
-            margin:auto;
+        .container {
+            max-width: 1100px;
+            margin: auto;
         }
 
         /* Booking Box */
-        .box{
-            background:#fff;
-            padding:22px;
-            border-radius:18px;
-            box-shadow:0 10px 30px rgba(0,0,0,0.06);
-            border:1px solid #f1f5f9;
-            display:grid;
-            grid-template-columns:1fr 1fr;
-            gap:20px;
+        .box {
+            background: #fff;
+            padding: 22px;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f1f5f9;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
 
-        .left{
-            display:flex;
-            align-items:center;
-            justify-content:center;
-        }
-        .left img{
-            width:100%;
-            max-width:420px;
+        .left {
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .right h3{
-            margin-bottom:12px;
+        .left img {
+            width: 100%;
+            max-width: 420px;
         }
 
-        .form-group{
-            margin-bottom:14px;
-        }
-        label{
-            font-size:14px;
-            font-weight:600;
-            display:block;
-            margin-bottom:6px;
-        }
-        input{
-            width:100%;
-            padding:12px 14px;
-            border-radius:14px;
-            border:1px solid #e5e7eb;
-            outline:none;
-            font-size:14px;
-        }
-        input:focus{
-            border:1px solid #facc15;
-            box-shadow:0 0 0 3px rgba(250,204,21,0.25);
+        .right h3 {
+            margin-bottom: 12px;
         }
 
-        button{
-            width:100%;
-            padding:12px;
-            background:#000;
-            color:#facc15;
-            border:none;
-            border-radius:14px;
-            font-size:15px;
-            font-weight:700;
-            cursor:pointer;
+        .form-group {
+            margin-bottom: 14px;
         }
-        button:hover{
-            opacity:0.9;
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid #e5e7eb;
+            outline: none;
+            font-size: 14px;
+        }
+
+        input:focus {
+            border: 1px solid #facc15;
+            box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.25);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #000;
+            color: #facc15;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
         }
 
         /* Responsive */
-        @media(max-width:900px){
-            .sidebar{
-                display:none;
+        @media(max-width:900px) {
+            .sidebar {
+                display: none;
             }
-            .main{
-                padding:18px;
+
+            .main {
+                padding: 18px;
             }
-            .box{
-                grid-template-columns:1fr;
-                text-align:center;
+
+            .box {
+                grid-template-columns: 1fr;
+                text-align: center;
             }
         }
     </style>
@@ -208,7 +224,7 @@ if(!isset($_SESSION['user_id'])){
             <div class="brand">CabRide</div>
 
             <div class="profile-box">
-                <h3>Hello, <?= htmlspecialchars($user_name); ?> 👋</h3>
+                <h3>Hello, <?= $user_name; ?> 👋</h3>
                 <p>User Dashboard</p>
             </div>
 
@@ -227,7 +243,7 @@ if(!isset($_SESSION['user_id'])){
 
             <!-- Topbar -->
             <div class="topbar">
-                <h2>Welcome Back, <span><?= htmlspecialchars($user_name); ?></span></h2>
+                <h2>Welcome Back, <span><?= $user_name; ?></span></h2>
                 <div>
                     <small style="color:#6b7280;">CabRide • User Panel</small>
                 </div>

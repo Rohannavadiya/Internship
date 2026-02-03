@@ -2,12 +2,14 @@
 session_start();
 include("../config/db.php");
 extract($_REQUEST);
-/* ✅ Enable after login
-if(!isset($_SESSION['driver_id'])){
-    header("Location: ../auth/login.php");
-    exit();
-}
-*/
+
+
+if (!isset($_SESSION['driver_id'])) { ?>
+    <script>
+        alert("Login required!");
+        window.location.href = "../auth/login.php";
+    </script>
+<?php }
 
 $driver_id   = $_SESSION['driver_id'];
 $driver_name = $_SESSION['driver_name'];
@@ -323,20 +325,20 @@ extract($row);
                 </div>
 
                 <div class="pay-box">
-                        <form method="POST" action="submit/done_payment.php">
-                            <label>Select Payment Method</label>
-                            <select class="select" name="payment_method" required>
-                                <option value="">-- Select --</option>
-                                <option value="cash">💵 Cash</option>
-                                <option value="online">📲 Online</option>
-                            </select>
-                            <input type="hidden" name="booking_id" value="<?= $booking_id; ?>">
-                            <input type="hidden" name="fare" value="<?= $fare; ?>">
-                            <input type="hidden" name="user_id" value="<?= $user_id; ?>">
-                            <button class="btn" type="submit" name="confirm_payment">
-                                ✅ Confirm Payment
-                            </button>
-                        </form>
+                    <form method="POST" action="submit/done_payment.php">
+                        <label>Select Payment Method</label>
+                        <select class="select" name="payment_method" required>
+                            <option value="">-- Select --</option>
+                            <option value="cash">💵 Cash</option>
+                            <option value="online">📲 Online</option>
+                        </select>
+                        <input type="hidden" name="booking_id" value="<?= $booking_id; ?>">
+                        <input type="hidden" name="fare" value="<?= $fare; ?>">
+                        <input type="hidden" name="user_id" value="<?= $user_id; ?>">
+                        <button class="btn" type="submit" name="confirm_payment">
+                            ✅ Confirm Payment
+                        </button>
+                    </form>
                 </div>
 
                 <a class="back" href="my_rides.php">⬅ Back to My Rides</a>

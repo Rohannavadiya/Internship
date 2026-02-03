@@ -2,18 +2,17 @@
 session_start();
 include("../config/db.php");
 
-/* ✅ Enable after login
-if(!isset($_SESSION['user_id'])){
-    header("Location: ../auth/login.php");
-    exit();
-}
-*/
-
-$tmp_id = $_SESSION['user_id']; // demo
+if (!isset($_SESSION['user_id'])) { ?>
+    <script>
+        alert("Login required!");
+        window.location.href = "../auth/login.php";
+    </script>
+<?php }
+$user_id = $_SESSION['user_id']; // demo
 $user_name = $_SESSION['user_name'] ?? "User";
 
 /* ✅ Fetch User Data */
-$sql = "SELECT * FROM users WHERE id='$tmp_id' LIMIT 1";
+$sql = "SELECT * FROM users WHERE id='$user_id' LIMIT 1";
 $result = mysqli_query($link, $sql);
 
 if (mysqli_num_rows($result) == 1) {
@@ -268,7 +267,7 @@ if (mysqli_num_rows($result) == 1) {
             <div class="brand">CabRide</div>
 
             <div class="profile-box">
-                <h3>Hello, <?= htmlspecialchars($user_name); ?> 👋</h3>
+                <h3>Hello, <?= $user_name; ?> 👋</h3>
                 <p>User Dashboard</p>
             </div>
 
@@ -287,7 +286,7 @@ if (mysqli_num_rows($result) == 1) {
 
             <!-- Topbar -->
             <div class="topbar">
-                <h2>Welcome Back, <span><?= htmlspecialchars($user_name); ?></span></h2>
+                <h2>Welcome Back, <span><?= $user_name; ?></span></h2>
                 <small style="color:#6b7280;">CabRide • User Panel</small>
             </div>
 

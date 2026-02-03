@@ -2,16 +2,15 @@
 session_start();
 include("../config/db.php");
 
-/* after admin login
-if(!isset($_SESSION['admin_id'])){
-    header("Location: login.php");
-    exit();
-}
-*/
-$admin_name=$_SESSION['admin_name'];
-$admin_id=$_SESSION['admin_id'];
+if (!isset($_SESSION['admin_id'])) { ?>
+    <script>
+        alert("Login required!");
+        window.location.href = "../auth/login.php";
+    </script>
+<?php }
 
-// ====== TODAY EARNINGS ======
+$admin_name = $_SESSION['admin_name'];
+$admin_id = $_SESSION['admin_id'];
 
 ?>
 <!DOCTYPE html>
@@ -41,7 +40,8 @@ $admin_id=$_SESSION['admin_id'];
             display: flex;
             min-height: 100vh
         }
- .profile-box {
+
+        .profile-box {
             background: #f9fafb;
             border-radius: 16px;
             padding: 18px;
@@ -96,7 +96,7 @@ $admin_id=$_SESSION['admin_id'];
             padding: 30px
         }
 
-         /* Topbar */
+        /* Topbar */
         .topbar {
             background: #fff;
             padding: 18px 22px;
@@ -188,7 +188,7 @@ $admin_id=$_SESSION['admin_id'];
         <div class="sidebar">
             <div class="brand">CabRide Admin</div>
             <div class="profile-box">
-                <h3>Hello, <?= htmlspecialchars($admin_name); ?> 👋</h3>
+                <h3>Hello, <?= $admin_name; ?> 👋</h3>
                 <p>Admin Dashboard</p>
             </div>
             <div class="menu">
@@ -212,31 +212,31 @@ $admin_id=$_SESSION['admin_id'];
             </div>
 
             <div class="grid">
-                <?php 
-                    $sql="select count(id) as Total_users from users";
-                    $result = mysqli_query($link,$sql);
-                    $row=mysqli_fetch_assoc($result);
-                    extract($row);
+                <?php
+                $sql = "select count(id) as Total_users from users";
+                $result = mysqli_query($link, $sql);
+                $row = mysqli_fetch_assoc($result);
+                extract($row);
 
-                    $sql="select count(id) as Total_drivers from drivers";
-                    $result = mysqli_query($link,$sql);
-                    $row=mysqli_fetch_assoc($result);
-                    extract($row);
+                $sql = "select count(id) as Total_drivers from drivers";
+                $result = mysqli_query($link, $sql);
+                $row = mysqli_fetch_assoc($result);
+                extract($row);
 
-                    $sql="select count(id) as Active_drivers from drivers where availability='online'";
-                    $result = mysqli_query($link,$sql);
-                    $row=mysqli_fetch_assoc($result);
-                    extract($row);
+                $sql = "select count(id) as Active_drivers from drivers where availability='online'";
+                $result = mysqli_query($link, $sql);
+                $row = mysqli_fetch_assoc($result);
+                extract($row);
 
-                    $sql="select count(*) as Total_rides from bookings";
-                    $result = mysqli_query($link,$sql);
-                    $row=mysqli_fetch_assoc($result);
-                    extract($row);
+                $sql = "select count(*) as Total_rides from bookings";
+                $result = mysqli_query($link, $sql);
+                $row = mysqli_fetch_assoc($result);
+                extract($row);
 
-                    $sql="select count(*) as Completed_rides from bookings where status='completed'";
-                    $result = mysqli_query($link,$sql);
-                    $row=mysqli_fetch_assoc($result);
-                    extract($row);
+                $sql = "select count(*) as Completed_rides from bookings where status='completed'";
+                $result = mysqli_query($link, $sql);
+                $row = mysqli_fetch_assoc($result);
+                extract($row);
                 ?>
                 <div class="card">
                     <h3>Total Users</h3>
@@ -261,18 +261,18 @@ $admin_id=$_SESSION['admin_id'];
             </div>
 
             <div class="earnings">
-                <?php 
+                <?php
 
                 $today = date("Y-m-d");
-                $sql="select sum(platform_amount) as Today_earnings from payments where date(payment_time)='$today' and payment_status='paid'";
-                $result = mysqli_query($link,$sql);
-                $row=mysqli_fetch_assoc($result);
+                $sql = "select sum(platform_amount) as Today_earnings from payments where date(payment_time)='$today' and payment_status='paid'";
+                $result = mysqli_query($link, $sql);
+                $row = mysqli_fetch_assoc($result);
                 extract($row);
 
-                $sql="select sum(driver_amount) as driver_amount,sum(platform_amount) as platform_amount from payments";
-                $result = mysqli_query($link,$sql);
-                    $row=mysqli_fetch_assoc($result);
-                    extract($row);
+                $sql = "select sum(driver_amount) as driver_amount,sum(platform_amount) as platform_amount from payments";
+                $result = mysqli_query($link, $sql);
+                $row = mysqli_fetch_assoc($result);
+                extract($row);
                 ?>
                 <div class="card">
                     <h3>Today's Total Earnings</h3>

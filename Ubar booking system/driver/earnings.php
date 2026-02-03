@@ -2,12 +2,12 @@
 session_start();
 include("../config/db.php");
 
-/* ✅ Enable after login
-if(!isset($_SESSION['driver_id'])){
-    header("Location: ../auth/login.php");
-    exit();
-}
-*/
+if (!isset($_SESSION['driver_id'])) { ?>
+    <script>
+        alert("Login required!");
+        window.location.href = "../auth/login.php";
+    </script>
+<?php }
 
 $driver_id   = $_SESSION['driver_id'];
 $driver_name = $_SESSION['driver_name'];
@@ -234,7 +234,7 @@ $driver_name = $_SESSION['driver_name'];
             <div class="brand">CabRide</div>
 
             <div class="profile-box">
-                <h3>Hello, <?= htmlspecialchars($driver_name); ?> 👋</h3>
+                <h3>Hello, <?= $driver_name; ?> 👋</h3>
                 <p>Driver Dashboard</p>
             </div>
 
@@ -259,36 +259,36 @@ $driver_name = $_SESSION['driver_name'];
             <!-- Summary Cards -->
             <div class="grid">
                 <div class="card">
-            <?php 
-                $sql="select sum(driver_amount) as driver_amount from payments where driver_id=$driver_id";
-                $result = mysqli_query($link, $sql);
-                $row = mysqli_fetch_assoc($result);
-                extract($row);
-            ?>
+                    <?php
+                    $sql = "select sum(driver_amount) as driver_amount from payments where driver_id=$driver_id";
+                    $result = mysqli_query($link, $sql);
+                    $row = mysqli_fetch_assoc($result);
+                    extract($row);
+                    ?>
                     <h3>Total Earnings</h3>
                     <p>All completed rides earnings</p>
                     <div class="value">₹<?= number_format($driver_amount, 2); ?></div>
                 </div>
 
                 <div class="card">
-                <?php
-                    $sql="select sum(driver_amount) as today_earnings from payments where date(payment_time)=CURDATE()";
+                    <?php
+                    $sql = "select sum(driver_amount) as today_earnings from payments where date(payment_time)=CURDATE()";
                     $result = mysqli_query($link, $sql);
                     $row = mysqli_fetch_assoc($result);
                     extract($row);
-                ?>
+                    ?>
                     <h3>Today Earnings</h3>
                     <p>Completed rides today</p>
                     <div class="value">₹<?= number_format($today_earnings, 2); ?></div>
                 </div>
 
                 <div class="card">
-                     <?php
-                        $sql = "select count(b.driver_id) as Total_Completed_Rides from drivers d,bookings b where b.driver_id=d.id and b.status='completed' and d.id=$driver_id";
-                        $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
-                        $row = mysqli_fetch_assoc($result);
-                        extract($row);
-                        ?>
+                    <?php
+                    $sql = "select count(b.driver_id) as Total_Completed_Rides from drivers d,bookings b where b.driver_id=d.id and b.status='completed' and d.id=$driver_id";
+                    $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
+                    $row = mysqli_fetch_assoc($result);
+                    extract($row);
+                    ?>
                     <h3>Completed Rides</h3>
                     <p>Total rides completed</p>
                     <div class="value"><?= $Total_Completed_Rides; ?></div>
@@ -312,18 +312,20 @@ $driver_name = $_SESSION['driver_name'];
                     </thead>
 
                     <tbody>
-                        <?php 
-                            $sql="select u.full_name,b.pickup_location,b.drop_location,b.fare,b.status,b.booking_time from users u,bookings b,drivers d where b.user_id=u.id and b.driver_id=$driver_id order by b.booking_time desc limit 5";
-                            $result = mysqli_query($link, $sql);
+                        <?php
+                        $sql = "select u.full_name,b.pickup_location,b.drop_location,b.fare,b.status,b.booking_time from users u,bookings b,drivers d where b.user_id=u.id and b.driver_id=$driver_id order by b.booking_time desc limit 5";
+                        $result = mysqli_query($link, $sql);
                         if (mysqli_num_rows($result) > 0) { ?>
-                            <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+                            <?php while ($row = mysqli_fetch_assoc($result)) { 
+                                extract($row);
+                                ?>
                                 <tr>
-                                    <td><?= htmlspecialchars($row['full_name']); ?></td>
-                                    <td><?= htmlspecialchars($row['pickup_location']); ?></td>
-                                    <td><?= htmlspecialchars($row['drop_location']); ?></td>
-                                    <td>₹<?= htmlspecialchars($row['fare']); ?></td>
+                                    <td><?= $full_name; ?></td>
+                                    <td><?= $pickup_location; ?></td>
+                                    <td><?= $drop_location; ?></td>
+                                    <td>₹<?= $fare; ?></td>
                                     <td><span class="badge completed">completed</span></td>
-                                    <td><?= date("d M Y, h:i A", strtotime($row['booking_time'])); ?></td>
+                                    <td><?= date("d M Y, h:i A", strtotime($booking_time)); ?></td>
                                 </tr>
                             <?php } ?>
                         <?php } else { ?>

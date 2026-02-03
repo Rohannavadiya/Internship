@@ -3,14 +3,14 @@ session_start();
 include("../config/db.php");
 $user_name = $_SESSION['user_name'];
 
-/* ✅ Uncomment after login system ready
-if(!isset($_SESSION['user_id'])){
-    header("Location: ../auth/login.php");
-    exit();
-}
-*/
+if (!isset($_SESSION['user_id'])) { ?>
+    <script>
+        alert("Login required!");
+        window.location.href = "../auth/login.php";
+    </script>
+<?php }
 
-$tmp_id = $_SESSION['user_id'];
+$user_id = $_SESSION['user_id'];
 $sql = "SELECT 
     b.booking_time,
     b.status,
@@ -20,7 +20,7 @@ $sql = "SELECT
     b.fare,
     b.driver_id
 FROM bookings b
-WHERE b.user_id = $tmp_id
+WHERE b.user_id = $user_id
 AND b.status NOT IN ('completed', 'cancelled')
 ORDER BY b.booking_time DESC
 LIMIT 1;
@@ -319,7 +319,7 @@ $result = mysqli_query($link, $sql);
         <div class="main">
             <!-- Topbar -->
             <div class="topbar">
-                <h2>Welcome Back, <span><?= htmlspecialchars($user_name); ?></span></h2>
+                <h2>Welcome Back, <span><?= $user_name; ?></span></h2>
                 <div>
                     <small style="color:#6b7280;">CabRide • User Panel</small>
                 </div>

@@ -2,12 +2,13 @@
 session_start();
 include("../config/db.php");
 
-/* after admin login
-if(!isset($_SESSION['admin_id'])){
-    header("Location: login.php");
-    exit();
-}
-*/
+if (!isset($_SESSION['admin_id'])) { ?>
+    <script>
+        alert("Login required!");
+        window.location.href = "../auth/login.php";
+    </script>
+<?php }
+
 $admin_name = $_SESSION['admin_name'];
 $admin_id = $_SESSION['admin_id'];
 // approve / block driver
@@ -138,10 +139,11 @@ $result = mysqli_query($link, $sql);
             font-weight: 700;
         }
 
- .btn-toggle {
+        .btn-toggle {
             background: #000;
             color: #facc15;
         }
+
         /* Table */
         .card {
             background: #fff;
@@ -288,7 +290,7 @@ $result = mysqli_query($link, $sql);
         <div class="sidebar">
             <div class="brand">CabRide Admin</div>
             <div class="profile-box">
-                <h3>Hello, <?= htmlspecialchars($admin_name); ?> 👋</h3>
+                <h3>Hello, <?= $admin_name; ?> 👋</h3>
                 <p>Admin Dashboard</p>
             </div>
             <div class="menu">

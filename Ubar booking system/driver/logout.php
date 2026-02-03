@@ -10,8 +10,8 @@ if (isset($_SESSION['driver_type']) == false) {
     </script>
 <?php }
 $sql = "update drivers set availability='offline' where id=$driver_id";
-    mysqli_query($link, $sql);
-unset($_SESSION['driver_id'],$_SESSION['driver_type'],$_SESSION['driver_name']);
+mysqli_query($link, $sql);
+unset($_SESSION['driver_id'], $_SESSION['driver_type'], $_SESSION['driver_name']);
 session_destroy();
 ?>
 <script>

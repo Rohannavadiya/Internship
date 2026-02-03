@@ -1,16 +1,16 @@
 <?php
 session_start();
 require_once('../config/db.php');
-$tmp_id = $_SESSION['user_id'];
-/*  ✅ Uncomment when you add login system
-if(!isset($_SESSION['user_id']) || $_SESSION['role'] != 'user'){
-    header("Location: ../auth/login.php");
-    exit();
-}
-*/
 
-// Demo user name (remove later when session works)
-$user_name = $_SESSION['user_name'] ?? "User";
+if (!isset($_SESSION['user_id'])) { ?>
+    <script>
+        alert("Login required!");
+        window.location.href = "../auth/login.php";
+    </script>
+<?php }
+
+$user_id = $_SESSION['user_id'];
+$user_name = $_SESSION['user_name'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -311,7 +311,7 @@ $user_name = $_SESSION['user_name'] ?? "User";
             <div class="brand">CabRide</div>
 
             <div class="profile-box">
-                <h3>Hello, <?= htmlspecialchars($user_name); ?> 👋</h3>
+                <h3>Hello, <?= $user_name; ?> 👋</h3>
                 <p>User Dashboard</p>
             </div>
 
@@ -330,7 +330,7 @@ $user_name = $_SESSION['user_name'] ?? "User";
 
             <!-- Topbar -->
             <div class="topbar">
-                <h2>Welcome Back, <span><?= htmlspecialchars($user_name); ?></span></h2>
+                <h2>Welcome Back, <span><?= $user_name; ?></span></h2>
                 <div>
                     <small style="color:#6b7280;">CabRide • User Panel</small>
                 </div>
@@ -343,7 +343,7 @@ $user_name = $_SESSION['user_name'] ?? "User";
                     <p>All rides you booked</p>
                     <div class="value">
                         <?php
-                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id and u.id=$tmp_id";
+                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id and u.id=$user_id";
                         $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
                         $row = mysqli_fetch_assoc($result);
                         extract($row);
@@ -358,7 +358,7 @@ $user_name = $_SESSION['user_name'] ?? "User";
                     <p>Successfully finished</p>
                     <div class="value">
                         <?php
-                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id and b.status='completed' and u.id=$tmp_id";
+                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id and b.status='completed' and u.id=$user_id";
                         $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
                         $row = mysqli_fetch_assoc($result);
                         extract($row);
@@ -373,7 +373,7 @@ $user_name = $_SESSION['user_name'] ?? "User";
                     <p>Waiting for driver</p>
                     <div class="value">
                         <?php
-                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id and b.status='requested' and u.id=$tmp_id";
+                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id and b.status='requested' and u.id=$user_id";
                         $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
                         $row = mysqli_fetch_assoc($result);
                         extract($row);
@@ -388,7 +388,7 @@ $user_name = $_SESSION['user_name'] ?? "User";
                     <p>Currently running ride</p>
                     <div class="value">
                         <?php
-                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id and b.status='ongoing' and u.id=$tmp_id";
+                        $sql = "select count(*) as Total_Rides from users u,bookings b where u.id=b.user_id and b.status='ongoing' and u.id=$user_id";
                         $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
                         $row = mysqli_fetch_assoc($result);
                         extract($row);
@@ -430,7 +430,7 @@ $user_name = $_SESSION['user_name'] ?? "User";
                     </thead>
                     <tbody>
                         <?php
-                        $sql = "select booking_time,pickup_location,drop_location,status,fare from bookings where user_id=$tmp_id limit 5";
+                        $sql = "select booking_time,pickup_location,drop_location,status,fare from bookings where user_id=$user_id limit 5";
                         $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
                         while ($row = mysqli_fetch_assoc($result)) {
                             extract($row);

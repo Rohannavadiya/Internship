@@ -2,12 +2,12 @@
 session_start();
 include("../config/db.php");
 
-/* after admin login
-if(!isset($_SESSION['admin_id'])){
-    header("Location: login.php");
-    exit();
-}
-*/
+if (!isset($_SESSION['admin_id'])) { ?>
+    <script>
+        alert("Login required!");
+        window.location.href = "../auth/login.php";
+    </script>
+<?php }
 $admin_id   = $_SESSION['admin_id'];
 $admin_name = $_SESSION['admin_name'];
 

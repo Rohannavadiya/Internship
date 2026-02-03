@@ -2,17 +2,19 @@
 session_start();
 include("../config/db.php");
 extract($_REQUEST);
-/* after admin login
-if(!isset($_SESSION['admin_id'])){
-    header("Location: login.php");
-    exit();
-}
-*/
-$admin_name=$_SESSION['admin_name'];
-$admin_id=$_SESSION['admin_id'];
-$sql="select * from users where id=$user_id";
-$result=mysqli_query($link,$sql);
-$row=mysqli_fetch_assoc($result);
+
+if (!isset($_SESSION['admin_id'])) { ?>
+    <script>
+        alert("Login required!");
+        window.location.href = "../auth/login.php";
+    </script>
+<?php }
+
+$admin_name = $_SESSION['admin_name'];
+$admin_id = $_SESSION['admin_id'];
+$sql = "select * from users where id=$user_id";
+$result = mysqli_query($link, $sql);
+$row = mysqli_fetch_assoc($result);
 extract($row);
 ?>
 <!DOCTYPE html>
@@ -42,7 +44,8 @@ extract($row);
             display: flex;
             min-height: 100vh
         }
-.profile-box {
+
+        .profile-box {
             background: #f9fafb;
             border-radius: 16px;
             padding: 18px;
@@ -97,7 +100,7 @@ extract($row);
             padding: 30px
         }
 
-         /* Topbar */
+        /* Topbar */
         .topbar {
             background: #fff;
             padding: 18px 22px;
@@ -189,7 +192,6 @@ extract($row);
                 padding: 18px
             }
         }
-        
     </style>
 </head>
 
@@ -200,7 +202,7 @@ extract($row);
         <div class="sidebar">
             <div class="brand">CabRide Admin</div>
             <div class="profile-box">
-                <h3>Hello, <?= htmlspecialchars($admin_name); ?> 👋</h3>
+                <h3>Hello, <?= $admin_name; ?> 👋</h3>
                 <p>Admin Dashboard</p>
             </div>
             <div class="menu">
@@ -219,7 +221,7 @@ extract($row);
         <div class="main">
 
             <div class="topbar">
-                 <h2>Welcome, <span>Admin</span></h2>
+                <h2>Welcome, <span>Admin</span></h2>
                 <small style="color:#6b7280;">CabRide • Admin Panel</small>
             </div>
 

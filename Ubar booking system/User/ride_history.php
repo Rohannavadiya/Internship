@@ -2,15 +2,15 @@
 session_start();
 include("../config/db.php");
 
-/* Enable after login
-if(!isset($_SESSION['user_id'])){
-    header("Location: ../auth/login.php");
-    exit();
-}
-*/
+if (!isset($_SESSION['user_id'])) { ?>
+    <script>
+        alert("Login required!");
+        window.location.href = "../auth/login.php";
+    </script>
+<?php }
 
 $user_id   = $_SESSION['user_id'];
-$user_name = $_SESSION['user_name'] ?? "User";
+$user_name = $_SESSION['user_name'];
 
 /* Fetch bookings with saved rating */
 $sql = "
@@ -198,7 +198,7 @@ $result = mysqli_query($link, $sql);
         <div class="sidebar">
             <div class="brand">CabRide</div>
             <div class="profile-box">
-                <h3>Hello, <?= htmlspecialchars($user_name); ?> 👋</h3>
+                <h3>Hello, <?= $user_name; ?> 👋</h3>
                 <p>User Dashboard</p>
             </div>
             <div class="menu">
@@ -238,21 +238,22 @@ $result = mysqli_query($link, $sql);
                         if (mysqli_num_rows($result) > 0) {
                             $i = 1;
                             while ($row = mysqli_fetch_assoc($result)) {
+                                extract($row);
                         ?>
                                 <tr>
                                     <td><?= $i++; ?></td>
-                                    <td><?= htmlspecialchars($row['pickup_location']); ?></td>
-                                    <td><?= htmlspecialchars($row['drop_location']); ?></td>
-                                    <td><?= $row['distance_km']; ?> km</td>
-                                    <td>₹<?= $row['fare']; ?></td>
-                                    <td><span class="badge <?= $row['status']; ?>"><?= ucfirst($row['status']); ?></span></td>
-                                    <td><?= date("d M Y, h:i A", strtotime($row['booking_time'])); ?></td>
+                                    <td><?= $pickup_location; ?></td>
+                                    <td><?= $drop_location; ?></td>
+                                    <td><?= $distance_km; ?> km</td>
+                                    <td>₹<?= $fare; ?></td>
+                                    <td><span class="badge <?= $status; ?>"><?= $status; ?></span></td>
+                                    <td><?= date("d M Y, h:i A", strtotime($booking_time)); ?></td>
                                     <td>
                                         <?php if ($row['status'] == "completed") { ?>
                                             <div class="star-rating"
-                                                data-booking="<?= $row['booking_id']; ?>"
-                                                data-driver="<?= $row['driver_id']; ?>"
-                                                data-rated="<?= $row['saved_rating']; ?>">
+                                                data-booking="<?= $booking_id; ?>"
+                                                data-driver="<?= $driver_id; ?>"
+                                                data-rated="<?= $saved_rating; ?>">
                                                 <?php for ($s = 1; $s <= 5; $s++) { ?>
                                                     <span data-value="<?= $s; ?>">★</span>
                                                 <?php } ?>
@@ -276,44 +277,44 @@ $result = mysqli_query($link, $sql);
     </div>
 
     <script>
-document.querySelectorAll(".star-rating").forEach(box => {
+        document.querySelectorAll(".star-rating").forEach(box => {
 
-    const stars   = box.querySelectorAll("span");
-    const booking = box.dataset.booking;
-    const driver  = box.dataset.driver;
-    const saved   = parseInt(box.dataset.rated);
+            const stars = box.querySelectorAll("span");
+            const booking = box.dataset.booking;
+            const driver = box.dataset.driver;
+            const saved = parseInt(box.dataset.rated);
 
-    // show saved rating
-    if(saved > 0){
-        stars.forEach(star => {
-            if(star.dataset.value <= saved){
-                star.classList.add("filled");
+            // show saved rating
+            if (saved > 0) {
+                stars.forEach(star => {
+                    if (star.dataset.value <= saved) {
+                        star.classList.add("filled");
+                    }
+                });
             }
-        });
-    }
 
-    stars.forEach(star => {
-        star.addEventListener("click", () => {
+            stars.forEach(star => {
+                star.addEventListener("click", () => {
 
-            const rating = star.dataset.value;
+                    const rating = star.dataset.value;
 
-            // fill stars
-            stars.forEach(s => {
-                s.classList.toggle("filled", s.dataset.value <= rating);
+                    // fill stars
+                    stars.forEach(s => {
+                        s.classList.toggle("filled", s.dataset.value <= rating);
+                    });
+
+                    // save rating (NO submit button)
+                    fetch("submit/save_rating.php", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        body: `booking_id=${booking}&driver_id=${driver}&rating=${rating}`
+                    });
+                });
             });
-
-            // save rating (NO submit button)
-            fetch("submit/save_rating.php", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: `booking_id=${booking}&driver_id=${driver}&rating=${rating}`
-            });
         });
-    });
-});
-</script>
+    </script>
 
 
 </body>

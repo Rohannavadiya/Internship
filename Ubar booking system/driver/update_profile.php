@@ -2,12 +2,13 @@
 session_start();
 include("../config/db.php");
 
-/* ✅ Enable after login
-if(!isset($_SESSION['driver_id'])){
-    header("Location: ../auth/login.php");
-    exit();
-}
-*/
+if(!isset($_SESSION['driver_id'])){?>
+    <script>
+        alert("Login required!");
+        window.location.href = "../auth/login.php";
+    </script>
+<?php }
+
 $driver_id   = $_SESSION['driver_id'];
 $driver_name = $_SESSION['driver_name'];
 $sql = "select * from drivers where id=$driver_id";
@@ -330,7 +331,7 @@ extract($row);
             <div class="brand">CabRide</div>
 
             <div class="profile-box">
-                <h3>Hello, <?= htmlspecialchars($driver_name); ?> 👋</h3>
+                <h3>Hello, <?= $driver_name; ?> 👋</h3>
                 <p>Driver Dashboard</p>
             </div>
 

@@ -1,12 +1,13 @@
 <?php
 session_start();
 require_once('../config/db.php');
-/* ✅ Enable after login system
-if(!isset($_SESSION['driver_id'])){
-    header("Location: ../auth/login.php");
-    exit();
-}
-*/
+
+if (!isset($_SESSION['driver_id'])) { ?>
+    <script>
+        alert("Login required!");
+        window.location.href = "../auth/login.php";
+    </script>
+<?php }
 
 $driver_name = $_SESSION['driver_name'];
 $driver_id = $_SESSION['driver_id'];
@@ -302,7 +303,7 @@ $driver_id = $_SESSION['driver_id'];
             <div class="brand">CabRide</div>
 
             <div class="profile-box">
-                <h3>Hello, <?= htmlspecialchars($driver_name); ?> 👋</h3>
+                <h3>Hello, <?= $driver_name; ?> 👋</h3>
                 <p>Driver Dashboard</p>
             </div>
 
@@ -321,7 +322,7 @@ $driver_id = $_SESSION['driver_id'];
 
             <!-- Topbar -->
             <div class="topbar">
-                <h2>Welcome, <span><?= htmlspecialchars($driver_name); ?></span></h2>
+                <h2>Welcome, <span><?= $driver_name; ?></span></h2>
                 <small style="color:#6b7280;">CabRide • Driver Panel</small>
             </div>
 
@@ -400,7 +401,7 @@ $driver_id = $_SESSION['driver_id'];
                         <p>Start receiving ride requests from users.</p>
                         <a href="submit/online_offline.php?availability=online">Go Online</a>
                     <?php
-                    } else if($availability == 'online'){
+                    } else if ($availability == 'online') {
                     ?>
                         <h3>Go Offline ✅</h3>
                         <p>End receiving ride requests from users.</p>

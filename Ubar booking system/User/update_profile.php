@@ -1,8 +1,18 @@
 <?php
 session_start();
 require_once('../config/db.php');
-$tmp_id = $_SESSION['user_id'];
-$sql = "select * from users where id=$tmp_id";
+
+if (!isset($_SESSION['user_id'])) { ?>
+    <script>
+        alert("Login required!");
+        window.location.href = "../auth/login.php";
+    </script>
+<?php }
+
+$user_id = $_SESSION['user_id'];
+$user_name = $_SESSION['user_name'];
+
+$sql = "select * from users where id=$user_id";
 $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
 $row = mysqli_fetch_assoc($result);
 extract($row);
@@ -313,7 +323,7 @@ extract($row);
             <div class="brand">CabRide</div>
 
             <div class="profile-box">
-                <h3>Hello, User 👋</h3>
+                <h3>Hello, <?= $user_name; ?> 👋</h3>
                 <p>User Dashboard</p>
             </div>
 
@@ -396,66 +406,64 @@ extract($row);
     </div>
 
     <script>
+        const fileInput = document.getElementById("profile_image");
+        const updateBtn = document.getElementById("updateBtn");
+        const imgMsg = document.getElementById("imgMsg");
+        const previewImg = document.getElementById("previewImg");
 
-const fileInput = document.getElementById("profile_image");
-const updateBtn = document.getElementById("updateBtn");
-const imgMsg = document.getElementById("imgMsg");
-const previewImg = document.getElementById("previewImg");
+        const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+        const maxSize = 2 * 1024 * 1024; // 2MB
 
-const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
-const maxSize = 2 * 1024 * 1024; // 2MB
+        // ✅ Button enabled by default (because default image exists)
+        updateBtn.disabled = false;
+        imgMsg.classList.remove("bad");
+        imgMsg.classList.add("ok");
+        imgMsg.innerText = "✅ Default image loaded. You can update profile.";
 
-// ✅ Button enabled by default (because default image exists)
-updateBtn.disabled = false;
-imgMsg.classList.remove("bad");
-imgMsg.classList.add("ok");
-imgMsg.innerText = "✅ Default image loaded. You can update profile.";
+        function setInvalid(text) {
+            imgMsg.classList.remove("ok");
+            imgMsg.classList.add("bad");
+            imgMsg.innerText = "❌ " + text;
+            updateBtn.disabled = true;
+        }
 
-function setInvalid(text){
-    imgMsg.classList.remove("ok");
-    imgMsg.classList.add("bad");
-    imgMsg.innerText = "❌ " + text;
-    updateBtn.disabled = true;
-}
+        function setValid(text) {
+            imgMsg.classList.remove("bad");
+            imgMsg.classList.add("ok");
+            imgMsg.innerText = "✅ " + text;
+            updateBtn.disabled = false;
+        }
 
-function setValid(text){
-    imgMsg.classList.remove("bad");
-    imgMsg.classList.add("ok");
-    imgMsg.innerText = "✅ " + text;
-    updateBtn.disabled = false;
-}
+        fileInput.addEventListener("change", function() {
+            const file = this.files[0];
 
-fileInput.addEventListener("change", function(){
-    const file = this.files[0];
+            // ✅ If user cancels selection, keep update enabled
+            if (!file) {
+                setValid("No new image selected. You can update profile.");
+                return;
+            }
 
-    // ✅ If user cancels selection, keep update enabled
-    if(!file){
-        setValid("No new image selected. You can update profile.");
-        return;
-    }
+            // ✅ Type validation
+            if (!allowedTypes.includes(file.type)) {
+                this.value = "";
+                setInvalid("Only JPG, JPEG, PNG allowed");
+                return;
+            }
 
-    // ✅ Type validation
-    if(!allowedTypes.includes(file.type)){
-        this.value = "";
-        setInvalid("Only JPG, JPEG, PNG allowed");
-        return;
-    }
+            // ✅ Size validation
+            if (file.size > maxSize) {
+                this.value = "";
+                setInvalid("Image size must be less than 2MB");
+                return;
+            }
 
-    // ✅ Size validation
-    if(file.size > maxSize){
-        this.value = "";
-        setInvalid("Image size must be less than 2MB");
-        return;
-    }
+            // ✅ Preview image
+            const reader = new FileReader();
+            reader.onload = (e) => previewImg.src = e.target.result;
+            reader.readAsDataURL(file);
 
-    // ✅ Preview image
-    const reader = new FileReader();
-    reader.onload = (e) => previewImg.src = e.target.result;
-    reader.readAsDataURL(file);
-
-    setValid("Image is valid. You can update now ✅");
-});
-
+            setValid("Image is valid. You can update now ✅");
+        });
     </script>
 
 </body>
