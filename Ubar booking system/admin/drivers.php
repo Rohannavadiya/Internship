@@ -138,7 +138,10 @@ $result = mysqli_query($link, $sql);
             font-weight: 700;
         }
 
-
+ .btn-toggle {
+            background: #000;
+            color: #facc15;
+        }
         /* Table */
         .card {
             background: #fff;
@@ -309,7 +312,10 @@ $result = mysqli_query($link, $sql);
             </div>
 
             <div class="card">
-                <h2>Manage <span style="color:#facc15">Drivers</span></h2>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h2>Manage <span style="color:#facc15">Drivers</span></h2>
+                    <a href="add_drivers.php" class="btn btn-toggle">➕ Add users</a>
+                </div>
                 <table>
                     <thead>
                         <tr>

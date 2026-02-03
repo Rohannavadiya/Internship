@@ -1,28 +1,22 @@
 <?php
 session_start();
 include("../config/db.php");
-
-/* protect page after login
+extract($_REQUEST);
+/* after admin login
 if(!isset($_SESSION['admin_id'])){
     header("Location: login.php");
     exit();
 }
 */
 $admin_name = $_SESSION['admin_name'];
-$logged_admin_id = $_SESSION['admin_id'];
-
-extract($_REQUEST);
-$sql = "select * from admins where id=$admin_id";
-$result = mysqli_query($link, $sql);
-$row = mysqli_fetch_assoc($result);
-extract($row);
+$admin_id = $_SESSION['admin_id'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>Edit Admin | CabRide</title>
+    <title>Users | Admin Panel</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -63,13 +57,12 @@ extract($row);
             color: #6b7280;
         }
 
-
-        /* sidebar */
+        /* Sidebar */
         .sidebar {
             width: 260px;
             background: #fff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
             padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, .08)
         }
 
         .brand {
@@ -86,46 +79,61 @@ extract($row);
             margin-bottom: 10px;
             text-decoration: none;
             color: #374151;
-            font-weight: 600
+            font-weight: 600;
         }
 
         .menu a.active,
         .menu a:hover {
             background: #facc15;
-            color: #000
+            color: #000;
         }
 
-        /* main */
+        /* Main */
         .main {
             flex: 1;
             padding: 30px
         }
 
+        /* Topbar */
         .topbar {
             background: #fff;
             padding: 18px 22px;
             border-radius: 18px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, .06);
-            margin-bottom: 25px
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
         }
 
+        .topbar h2 {
+            font-size: 20px;
+        }
+
+        .topbar span {
+            color: #facc15;
+            font-weight: 700;
+        }
+
+
+        /* Card */
         .card {
-            max-width: 700px;
             background: #fff;
             padding: 22px;
             border-radius: 18px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, .06)
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .06);
+            max-width: 700px
         }
 
         .form-group {
-            margin-bottom: 15px
+            margin-bottom: 14px
         }
 
         label {
-            font-weight: 600;
             font-size: 14px;
-            display: block;
-            margin-bottom: 6px
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: block
         }
 
         input,
@@ -133,36 +141,40 @@ extract($row);
             width: 100%;
             padding: 12px 14px;
             border-radius: 14px;
-            border: 1px solid #e5e7eb
+            border: 1px solid #e5e7eb;
+            font-size: 14px
+        }
+
+        input[readonly] {
+            background: #f3f4f6
         }
 
         input:focus,
         select:focus {
-            outline: none;
             border-color: #facc15;
-            box-shadow: 0 0 0 3px rgba(250, 204, 21, .25)
+            box-shadow: 0 0 0 3px rgba(250, 204, 21, .25);
+            outline: none
         }
 
         .btn {
-            padding: 12px 20px;
+            padding: 12px 18px;
             border-radius: 14px;
             background: #000;
             color: #facc15;
-            font-weight: 700;
             border: none;
+            font-weight: 800;
             cursor: pointer
         }
 
         .btn-outline {
+            display: inline-block;
             margin-left: 10px;
-            background: #fff;
+            padding: 12px 18px;
+            border-radius: 14px;
             border: 2px solid #facc15;
+            text-decoration: none;
             color: #000;
-            text-decoration: none
-        }
-
-        .btn:hover {
-            opacity: .9
+            font-weight: 800
         }
 
         @media(max-width:900px) {
@@ -189,9 +201,9 @@ extract($row);
             </div>
             <div class="menu">
                 <a href="dashboard.php">📊 Dashboard</a>
-                <a href="users.php">👤 Users</a>
+                <a class="active" href="users.php">👤 Users</a>
                 <a href="drivers.php">🚖 Drivers</a>
-                <a class="active" href="admins.php">👑 Admins</a>
+                <a href="admins.php">👑 Admins</a>
                 <a href="rides.php">📍 Rides</a>
                 <a href="payments.php">💰 Payments</a>
                 <a href="ratings.php">⭐ Ratings</a>
@@ -203,27 +215,45 @@ extract($row);
         <div class="main">
 
             <div class="topbar">
-                <h2>Edit <span style="color:#facc15">Admin</span></h2>
+                <h2>Welcome, <span>Admin</span></h2>
+                <small style="color:#6b7280;">CabRide • Admin Panel</small>
             </div>
 
             <div class="card">
-                <form method="POST" action="submit/update_admins.php">
+                <h3>👤 Add User</h3>
+                <br>
 
+                <form method="POST" action="submit/insert_users.php">
                     <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" name="name" value="<?= $name; ?>" required>
+                        <label>Full Name</label>
+                        <input type="text" name="full_name" required>
                     </div>
-
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" name="password" required>
+                    </div>
                     <div class="form-group">
                         <label>Email</label>
-                        <input type="email" name="email" value="<?= $email; ?>" required>
+                        <input type="mail" name="email" required>
                     </div>
-                    <input type="hidden" name="admin_id" value="<?= $id; ?>">
-                    <button type="submit" name="update_admin" class="btn">💾 Update Admin</button>
-                    <a href="admins.php" class="btn btn-outline">⬅ Back</a>
 
+                    <div class="form-group">
+                        <label>Mobile</label>
+                        <input type="text" name="mobile" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="status">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <button type="submit" name="insert_user" class="btn">✅ insert User</button>
+                    <a href="users.php" class="btn-outline">⬅ Back</a>
                 </form>
             </div>
+
         </div>
     </div>
 </body>

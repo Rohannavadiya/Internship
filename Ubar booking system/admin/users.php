@@ -281,7 +281,10 @@ $result = mysqli_query($link, $sql);
             </div>
 
             <div class="card">
-                <h2>Manage <span>Users</span></h2>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h2>Manage <span style="color:#facc15">Users</span></h2>
+                    <a href="add_users.php" class="btn btn-toggle">➕ Add users</a>
+                </div>
                 <table>
                     <thead>
                         <tr>

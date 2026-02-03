@@ -11,11 +11,6 @@ if(!isset($_SESSION['admin_id'])){
 $admin_name = $_SESSION['admin_name'];
 $logged_admin_id = $_SESSION['admin_id'];
 
-extract($_REQUEST);
-$sql = "select * from admins where id=$admin_id";
-$result = mysqli_query($link, $sql);
-$row = mysqli_fetch_assoc($result);
-extract($row);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -207,19 +202,22 @@ extract($row);
             </div>
 
             <div class="card">
-                <form method="POST" action="submit/update_admins.php">
+                <form method="POST" action="submit/insert_admins.php">
 
                     <div class="form-group">
                         <label>Name</label>
-                        <input type="text" name="name" value="<?= $name; ?>" required>
+                        <input type="text" name="name" required>
                     </div>
-
+                    
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" name="password" required>
+                    </div>
                     <div class="form-group">
                         <label>Email</label>
-                        <input type="email" name="email" value="<?= $email; ?>" required>
+                        <input type="email" name="email" required>
                     </div>
-                    <input type="hidden" name="admin_id" value="<?= $id; ?>">
-                    <button type="submit" name="update_admin" class="btn">💾 Update Admin</button>
+                    <button type="submit" name="insert_admin" class="btn">💾 insert Admin</button>
                     <a href="admins.php" class="btn btn-outline">⬅ Back</a>
 
                 </form>
@@ -227,5 +225,3 @@ extract($row);
         </div>
     </div>
 </body>
-
-</html>

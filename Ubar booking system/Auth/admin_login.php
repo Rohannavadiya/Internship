@@ -3,10 +3,10 @@ session_start();
 include("../config/db.php");
 
 // If already logged in
-if (isset($_SESSION['admin_id'])) {
-    header("Location: dashboard.php");
-    exit();
-}
+// if (isset($_SESSION['admin_id'])) {
+//     header("Location: dashboard.php");
+//     exit();
+// }
 
 $msg = "";
 

@@ -12,11 +12,8 @@ $admin_id   = $_SESSION['admin_id'];
 $admin_name = $_SESSION['admin_name'];
 
 /* Fetch all admins */
-$result = mysqli_query($link,"
-    SELECT id, name, email, created_at
-    FROM admins
-    ORDER BY created_at DESC
-");
+$sql = "SELECT id, name, email, created_at FROM admins ORDER BY created_at DESC";
+$result = mysqli_query($link, $sql);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -142,6 +139,7 @@ $result = mysqli_query($link,"
         td {
             padding: 12px;
             font-size: 14px;
+            text-align: center;
         }
 
         th {
@@ -208,6 +206,11 @@ $result = mysqli_query($link,"
             color: #fff
         }
 
+        .btn-toggle {
+            background: #000;
+            color: #facc15;
+        }
+
         .action-btn {
             padding: 8px 10px;
             border-radius: 12px;
@@ -270,7 +273,7 @@ $result = mysqli_query($link,"
         <div class="sidebar">
             <div class="brand">CabRide Admin</div>
             <div class="profile-box">
-                <h3>Hello, <?= htmlspecialchars($admin_name); ?> 👋</h3>
+                <h3>Hello, <?= $admin_name; ?> 👋</h3>
                 <p>Admin Dashboard</p>
             </div>
             <div class="menu">
@@ -295,6 +298,11 @@ $result = mysqli_query($link,"
             </div>
 
             <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h2>Manage <span style="color:#facc15">Admins</span></h2>
+                    <a href="add_admins.php" class="btn btn-toggle">➕ Add Admin</a>
+                </div>
+
                 <table>
                     <thead>
                         <tr>
@@ -308,20 +316,22 @@ $result = mysqli_query($link,"
                     <tbody>
 
                         <?php $i = 1;
-                        while ($row = mysqli_fetch_assoc($result)) { ?>
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            extract($row);
+                        ?>
                             <tr>
                                 <td><?= $i++; ?></td>
-                                <td><?= htmlspecialchars($row['name']); ?></td>
-                                <td><?= htmlspecialchars($row['email']); ?></td>
-                                <td><?= date("d M Y", strtotime($row['created_at'])); ?></td>
+                                <td><?= $name; ?></td>
+                                <td><?= $email; ?></td>
+                                <td><?= date("d M Y", strtotime($created_at)); ?></td>
                                 <td>
                                     <!-- Edit allowed for all -->
-                                    <a href="edit_admins.php?admin_id=<?= $row['id']; ?>" class="action-btn btn-edit">
+                                    <a href="edit_admins.php?admin_id=<?= $id; ?>" class="action-btn btn-edit">
                                         <i class="fa fa-pen-to-square"></i>
                                     </a>
 
                                     <!-- Delete NOT allowed for self -->
-                                    <?php if ($row['id'] != $admin_id) { ?>
+                                    <?php if ($id != $admin_id) { ?>
                                         <a href="submit/delete_admin.php?admin_id=<?= $row['id']; ?>"
                                             onclick="return confirm('Delete this admin?')"
                                             class="action-btn btn-delete">

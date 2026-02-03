@@ -234,8 +234,8 @@ extract($row);
                     </div>
 
                     <div class="form-group">
-                        <label>Email (readonly)</label>
-                        <input type="email" value="<?= $email; ?>" readonly>
+                        <label>Email</label>
+                        <input type="mail" name="email" value="<?= $email; ?>" required>
                     </div>
 
                     <div class="form-group">
