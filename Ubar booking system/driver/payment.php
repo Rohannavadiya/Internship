@@ -293,7 +293,7 @@ extract($row);
                 <a href="earnings.php">💰 Earnings</a>
                 <a class="active" href="payment.php?booking_id=<?= $booking_id; ?>">💳 Payment</a>
                 <a href="profile.php">👤 Profile</a>
-                <a href="../auth/logout.php">🚪 Logout</a>
+                <a href="logout.php">🚪 Logout</a>
             </div>
         </div>
 

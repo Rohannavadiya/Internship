@@ -281,7 +281,7 @@ $result = mysqli_query($link, $sql);
             <div class="brand">CabRide</div>
 
             <div class="profile-box">
-                <h3>Hello, <?= htmlspecialchars($driver_name); ?> 👋</h3>
+                <h3>Hello, <?= $driver_name; ?> 👋</h3>
                 <p>Driver Dashboard</p>
             </div>
 

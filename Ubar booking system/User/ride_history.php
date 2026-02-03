@@ -207,7 +207,7 @@ $result = mysqli_query($link, $sql);
                 <a href="track_ride.php">📍 Track Ride</a>
                 <a class="active" href="ride_history.php">📜 Ride History</a>
                 <a href="profile.php">👤 Profile</a>
-                <a href="../auth/logout.php">🚪 Logout</a>
+                <a href="logout.php">🚪 Logout</a>
             </div>
         </div>
 

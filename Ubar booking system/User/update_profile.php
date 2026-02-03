@@ -333,7 +333,7 @@ extract($row);
                 <a href="track_ride.php">📍 Track Ride</a>
                 <a href="ride_history.php">📜 Ride History</a>
                 <a class="active" href="profile.php">👤 Profile</a>
-                <a href="../auth/logout.php">🚪 Logout</a>
+                <a href="logout.php">🚪 Logout</a>
             </div>
         </div>
 
