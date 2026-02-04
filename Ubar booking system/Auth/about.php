@@ -109,10 +109,11 @@ body{
 <div class="navbar">
     <div class="logo">CabRide</div>
     <div class="nav-links">
-        <a href="index.php">Home</a>
+        <a href="../index.php">Home</a>
         <a href="about.php">About</a>
         <a href="services.php">Services</a>
         <a href="login.php">Login</a>
+         <a href="admin_login.php" class="admin-link">Admin</a>
     </div>
 </div>
 
