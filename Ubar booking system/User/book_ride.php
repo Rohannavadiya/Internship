@@ -2,6 +2,7 @@
 session_start();
 include("../config/db.php");
 $user_name = $_SESSION['user_name'];
+$user_id = $_SESSION['user_id'];
 
 if (!isset($_SESSION['user_id'])) { ?>
     <script>
@@ -265,6 +266,13 @@ if (!isset($_SESSION['user_id'])) { ?>
 
                     <!-- Right Form -->
                     <div class="right">
+                        <?php
+                            $sql="select status from users where id=$user_id";
+                            $result = mysqli_query($link,$sql);
+                            $row=mysqli_fetch_assoc($result);
+                            extract($row);
+                            if($status=="active"){
+                         ?>
                         <h3>Enter Ride Details</h3>
 
                         <form method="POST" action="submit/insert_book_ride.php">
@@ -285,6 +293,12 @@ if (!isset($_SESSION['user_id'])) { ?>
 
                             <button type="submit" name="book_ride">✅ Confirm Booking</button>
                         </form>
+                        <?php  
+                            }
+                            else{
+                                echo"You are not active user";
+                            }
+                        ?>
                     </div>
                 </div>
 

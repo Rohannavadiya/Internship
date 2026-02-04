@@ -254,7 +254,6 @@ $result = mysqli_query($link, $sql);
 <body>
     <div class="wrapper">
 
-        <!-- Sidebar -->
         <div class="sidebar">
             <div class="brand">CabRide Admin</div>
             <div class="profile-box">

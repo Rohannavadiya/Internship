@@ -235,11 +235,13 @@ extract($row);
                         <input type="text" name="full_name"
                             value="<?= $full_name; ?>" required>
                     </div>
-
                     <div class="form-group">
-                        <label>Email (readonly)</label>
-                        <input type="email"
-                            value="<?= $email; ?>" readonly>
+                        <label>Password (Optional)</label>
+                        <input type="password" name="password">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="mail" name="email" value="<?= $email; ?>" required>
                     </div>
 
                     <div class="form-group">
@@ -249,9 +251,9 @@ extract($row);
                     </div>
 
                     <div class="form-group">
-                        <label>License Number (readonly)</label>
-                        <input type="text"
-                            value="<?= $license_number; ?>" readonly>
+                        <label>License Number</label>
+                        <input type="text" name="license_number"
+                            value="<?= $license_number; ?>" required>
                     </div>
 
                     <div class="form-group">

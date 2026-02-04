@@ -30,9 +30,26 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
     exit();
 }
 
-// fetch drivers
-$sql = "SELECT id, full_name, email, mobile, license_number,vehicle_type, availability, status, created_at FROM drivers ORDER BY created_at DESC";
+$sql = "
+SELECT 
+    d.id,
+    d.full_name,
+    d.email,
+    d.mobile,
+    d.license_number,
+    d.vehicle_type,
+    d.availability,
+    d.status,
+    d.created_at,
+    ROUND(AVG(r.rating),1) AS avg_rating,
+    COUNT(r.id) AS total_reviews
+FROM drivers d
+LEFT JOIN ratings r ON r.driver_id = d.id
+GROUP BY d.id
+ORDER BY d.created_at DESC
+";
 $result = mysqli_query($link, $sql);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -330,6 +347,7 @@ $result = mysqli_query($link, $sql);
                             <th>Availability</th>
                             <th>Status</th>
                             <th>Joined</th>
+                            <th>Rating</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -356,6 +374,23 @@ $result = mysqli_query($link, $sql);
                                     </span>
                                 </td>
                                 <td><?= date("d M Y", strtotime($created_at)); ?></td>
+
+                                <td>
+                                    <?php if ($avg_rating) { ?>
+                                        <span style="color:#facc15; font-weight:700;">
+                                            <?= str_repeat("★", floor($avg_rating)); ?>
+                                            <?= $avg_rating; ?>/5
+                                        </span>
+                                        <br>
+                                        <small style="color:#6b7280;">
+                                            (<?= $total_reviews; ?> reviews)
+                                        </small>
+                                    <?php } else { ?>
+                                        <span style="color:#9ca3af;">No ratings</span>
+                                    <?php } ?>
+                                </td>
+
+
                                 <td>
                                     <?php if ($status == 'approved') { ?>
                                         <a class="action-btn btn-block"

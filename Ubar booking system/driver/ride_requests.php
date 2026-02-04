@@ -8,10 +8,13 @@ if (!isset($_SESSION['driver_id'])) { ?>
         window.location.href = "../auth/login.php";
     </script>
 <?php }
-
 $driver_id   = $_SESSION['driver_id'];
 $driver_name = $_SESSION['driver_name'];
-$msg = "";
+
+$sql = "select status from drivers where id=$driver_id";
+$result = mysqli_query($link, $sql);
+$row = mysqli_fetch_assoc($result);
+extract($row);
 
 if (isset($_REQUEST['sussess'])) {
     $msg = "<div class='alert success'>" . $_REQUEST['sussess'] . "</div>";
@@ -262,7 +265,7 @@ $result = mysqli_query($link, $sql);
             <div class="brand">CabRide</div>
 
             <div class="profile-box">
-                <h3>Hello, <?= htmlspecialchars($driver_name); ?> 👋</h3>
+                <h3>Hello, <?= $driver_name; ?> 👋</h3>
                 <p>Driver Dashboard</p>
             </div>
 
@@ -281,11 +284,9 @@ $result = mysqli_query($link, $sql);
 
             <!-- Topbar -->
             <div class="topbar">
-                <h2>Welcome Back, <span><?= htmlspecialchars($driver_name); ?></span></h2>
+                <h2>Welcome Back, <span><?= $driver_name; ?></span></h2>
                 <small style="color:#6b7280;">CabRide • Driver Panel</small>
             </div>
-
-            <?= $msg; ?>
 
             <div class="section">
                 <h3>📥 New Booking Requests</h3>
@@ -305,34 +306,42 @@ $result = mysqli_query($link, $sql);
                     </thead>
 
                     <tbody>
-                        <?php if (mysqli_num_rows($result) > 0) { ?>
-                            <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-                                <tr>
-                                    <td><?= htmlspecialchars($row['full_name']); ?></td>
-                                    <td><?= htmlspecialchars($row['mobile']); ?></td>
-                                    <td><?= htmlspecialchars($row['pickup_location']); ?></td>
-                                    <td><?= htmlspecialchars($row['drop_location']); ?></td>
-                                    <td><?= htmlspecialchars($row['distance_km']); ?></td>
-                                    <td>₹<?= htmlspecialchars($row['fare']); ?></td>
-                                    <td><span class="badge requested"><?= htmlspecialchars($row['status']); ?></span></td>
-                                    <td>
-                                        <div class="btns">
-                                            <a class="btn btn-accept" href="submit/ride_update.php?accept_id=<?= $row['id']; ?>"
-                                                onclick="return confirm('Accept this ride?')">✅ Accept</a>
+                        <?php
+                        if ($status == "approved") {
+                            if (mysqli_num_rows($result) > 0) { ?>
+                                <?php while ($row = mysqli_fetch_assoc($result)) {
+                                    extract($row);
+                                ?>
+                                    <tr>
+                                        <td><?= $full_name; ?></td>
+                                        <td><?= $mobile; ?></td>
+                                        <td><?= $pickup_location; ?></td>
+                                        <td><?= $drop_location; ?></td>
+                                        <td><?= $distance_km; ?></td>
+                                        <td>₹<?= $fare; ?></td>
+                                        <td><span class="badge requested"><?= $status; ?></span></td>
+                                        <td>
+                                            <div class="btns">
+                                                <a class="btn btn-accept" href="submit/ride_update.php?accept_id=<?= $id; ?>"
+                                                    onclick="return confirm('Accept this ride?')">✅ Accept</a>
 
-                                            <a class="btn btn-reject" href="submit/ride_update.php?reject_id=<?= $row['id']; ?>"
-                                                onclick="return confirm('Reject this ride?')">❌ Reject</a>
-                                        </div>
+                                                <a class="btn btn-reject" href="submit/ride_update.php?reject_id=<?= $id; ?>"
+                                                    onclick="return confirm('Reject this ride?')">❌ Reject</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                            <?php } else { ?>
+                                <tr>
+                                    <td colspan="8" style="text-align:center;color:#6b7280;padding:16px;">
+                                        ✅ No new ride requests found.
                                     </td>
                                 </tr>
-                            <?php } ?>
-                        <?php } else { ?>
-                            <tr>
-                                <td colspan="8" style="text-align:center;color:#6b7280;padding:16px;">
-                                    ✅ No new ride requests found.
-                                </td>
-                            </tr>
-                        <?php } ?>
+                        <?php }
+                        } else {
+                            echo "<tr><td>You are not approved!</td></tr>";
+                        }
+                        ?>
                     </tbody>
                 </table>
             </div>

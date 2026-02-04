@@ -383,6 +383,30 @@ $driver_id = $_SESSION['driver_id'];
                         ?>
                     </div>
                 </div>
+                <div class="card">
+                    <?php
+                    $rating_sql = "
+                        SELECT 
+                            ROUND(AVG(rating), 1) AS avg_rating,
+                            COUNT(*) AS total_ratings
+                        FROM ratings
+                        WHERE driver_id = $driver_id
+                    ";
+                    $rating_result = mysqli_query($link, $rating_sql);
+                    $rating_row = mysqli_fetch_assoc($rating_result);
+
+                    $avg_rating = $rating_row['avg_rating'] ?? 0;
+                    $total_ratings = $rating_row['total_ratings'] ?? 0;
+                    ?>
+                    <h3>My Rating ⭐</h3>
+                    <p>Based on user reviews</p>
+                    <div class="value">
+                        <?= $avg_rating ? $avg_rating . " / 5" : "No Ratings"; ?>
+                    </div>
+                    <small style="color:#6b7280;">
+                        <?= $total_ratings; ?> reviews
+                    </small>
+                </div>
             </div>
 
             <!-- Actions -->

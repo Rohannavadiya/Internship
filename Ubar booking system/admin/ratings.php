@@ -17,7 +17,6 @@ $sql = "
 SELECT 
     r.id,
     r.rating,
-    r.review,
     r.created_at,
     u.full_name AS user_name,
     d.full_name AS driver_name,
@@ -232,6 +231,28 @@ $result = mysqli_query($link, $sql);
                 <h2>User <span>Ratings</span></h2>
                 <small style="color:#6b7280;">CabRide • Admin Panel</small>
             </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-bottom:20px;">
+                <?php
+                // 🔹 Overall average rating
+                $avgSql = "SELECT ROUND(AVG(rating), 2) AS avg_rating, COUNT(*) AS total_ratings FROM ratings";
+                $avgResult = mysqli_query($link, $avgSql);
+                $avgRow = mysqli_fetch_assoc($avgResult);
+
+                $avg_rating   = $avgRow['avg_rating'] ?? 0;
+                $totalRatings = $avgRow['total_ratings'] ?? 0;
+
+                ?>
+                <div class="card" style="text-align:center;">
+                    <h3 style="margin-bottom:8px;">⭐ Average Rating</h3>
+                    <div style="font-size:36px;font-weight:900;color:#facc15;">
+                        <?= $avg_rating; ?>
+                    </div>
+                    <p style="color:#6b7280;font-size:13px;">
+                        Based on <?= $totalRatings; ?> rides
+                    </p>
+                </div>
+
+            </div>
 
             <div class="card">
                 <h2>All <span style="color:#facc15">Ratings</span></h2>
@@ -244,7 +265,6 @@ $result = mysqli_query($link, $sql);
                             <th>Driver</th>
                             <th>Ride</th>
                             <th>Rating</th>
-                            <th>Review</th>
                             <th>Date</th>
                         </tr>
                     </thead>
@@ -266,9 +286,6 @@ $result = mysqli_query($link, $sql);
                                         <?= $drop_location; ?>
                                     </td>
                                     <td class="stars"><?= $stars; ?></td>
-                                    <td class="review">
-                                        <?= $review ? $review : "<em>No review</em>"; ?>
-                                    </td>
                                     <td><?= date("d M Y", strtotime($created_at)); ?></td>
                                 </tr>
                             <?php }

@@ -158,7 +158,7 @@ body{
 
 <!-- Footer -->
 <div class="footer">
-    © 2026 CabRide. All rights reserved.
+    © 2026 Rohan Navadiya. All rights reserved.
 </div>
 
 </body>

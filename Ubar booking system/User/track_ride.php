@@ -22,8 +22,7 @@ $sql = "SELECT
 FROM bookings b
 WHERE b.user_id = $user_id
 AND b.status NOT IN ('completed', 'cancelled')
-ORDER BY b.booking_time DESC
-LIMIT 1;
+ORDER BY b.booking_time;
 ";
 
 $result = mysqli_query($link, $sql);

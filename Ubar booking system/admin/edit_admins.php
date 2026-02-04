@@ -214,7 +214,14 @@ extract($row);
                         <label>Name</label>
                         <input type="text" name="name" value="<?= $name; ?>" required>
                     </div>
-
+                    <?php 
+                    if($logged_admin_id!=$admin_id){
+                    ?>
+                    <div class="form-group">
+                         <label>Password (Optional)</label>
+                        <input type="password" name="password">
+                    </div>
+                    <?php } ?>
                     <div class="form-group">
                         <label>Email</label>
                         <input type="email" name="email" value="<?= $email; ?>" required>

@@ -236,6 +236,11 @@ extract($row);
                     </div>
 
                     <div class="form-group">
+                        <label>Password (Optional)</label>
+                        <input type="password" name="password">
+                    </div>
+
+                    <div class="form-group">
                         <label>Email</label>
                         <input type="mail" name="email" value="<?= $email; ?>" required>
                     </div>
