@@ -12,6 +12,21 @@ if (!isset($_SESSION['admin_id'])) { ?>
 $admin_name = $_SESSION['admin_name'];
 $admin_id   = $_SESSION['admin_id'];
 
+$search = "";
+$where = "";
+
+if (isset($_GET['search']) && $_GET['search'] != "") {
+    $search = mysqli_real_escape_string($link, $_GET['search']);
+    $where = "
+        AND (
+            u.full_name LIKE '%$search%' OR
+            d.full_name LIKE '%$search%' OR
+            p.payment_method LIKE '%$search%' OR
+            p.payment_status LIKE '%$search%'
+        )
+    ";
+}
+
 /* Fetch payments */
 $sql = "
 SELECT 
@@ -24,12 +39,15 @@ SELECT
     p.payment_time,
     (p.amount * 0.7) AS driver_amount,
     (p.amount * 0.3) AS platform_amount
-FROM payments p
-JOIN bookings b ON b.id = p.booking_id
-JOIN users u ON u.id = b.user_id
-LEFT JOIN drivers d ON d.id = b.driver_id
+FROM payments p, bookings b, users u, drivers d
+WHERE 
+    p.booking_id = b.id
+    AND b.user_id = u.id
+    AND b.driver_id = d.id
+    $where
 ORDER BY p.payment_time DESC
 ";
+
 
 $result = mysqli_query($link, $sql);
 ?>
@@ -238,12 +256,52 @@ $result = mysqli_query($link, $sql);
         <div class="main">
 
             <div class="topbar">
-                <h2>Payments <span>Overview</span></h2>
+                <h2>Welcome, <span>Admin</span></h2>
                 <small style="color:#6b7280;">CabRide • Admin Panel</small>
             </div>
 
             <div class="card">
                 <h2>All <span style="color:#facc15">Payments</span></h2>
+                <form method="get" style="margin:15px 0; display:flex; gap:10px; align-items:center;">
+                    <input
+                        type="text"
+                        name="search"
+                        value="<?= htmlspecialchars($search); ?>"
+                        placeholder="Search user, driver, status, method..."
+                        style="
+            padding:10px 14px;
+            border-radius:12px;
+            border:1px solid #e5e7eb;
+            width:280px;
+            font-size:14px;
+        ">
+
+                    <button type="submit"
+                        style="
+            padding:10px 16px;
+            border-radius:12px;
+            border:none;
+            background:#facc15;
+            font-weight:700;
+            cursor:pointer;
+        ">
+                        🔍 Search
+                    </button>
+
+                    <?php if ($search != "") { ?>
+                        <a href="payments.php"
+                            style="
+               padding:10px 14px;
+               border-radius:12px;
+               background:#ef4444;
+               color:#fff;
+               text-decoration:none;
+               font-weight:700;
+           ">
+                            ❌ Clear
+                        </a>
+                    <?php } ?>
+                </form>
 
                 <table>
                     <thead>

@@ -293,8 +293,8 @@ $result = mysqli_query($link, $sql);
 
 
             <div class="topbar">
-                <h2>Manage <span>Admins</span></h2>
-                <small>CabRide • Admin Panel</small>
+                <h2>Welcome, <span>Admin</span></h2>
+                <small style="color:#6b7280;">CabRide • Admin Panel</small>
             </div>
 
             <div class="card">

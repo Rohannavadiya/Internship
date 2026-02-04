@@ -125,13 +125,20 @@ $admin_id = $_SESSION['admin_id'];
             gap: 18px;
         }
 
-        .card {
-            background: #fff;
-            padding: 22px;
-            border-radius: 18px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, .06);
-            border: 1px solid #f1f5f9;
-        }
+      .card {
+    background: #fff;
+    padding: 22px;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .06);
+    border: 1px solid #f1f5f9;
+    transition: all 0.3s ease;   /* 👈 important */
+}
+
+.card:hover {
+    transform: translateY(-6px); /* 👈 move up */
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+}
+
 
         .card h3 {
             font-size: 15px;

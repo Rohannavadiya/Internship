@@ -5,8 +5,10 @@ $avg_rating = 0;
 $total_reviews = 0;
 
 $result = mysqli_query($link, "
-    SELECT ROUND(AVG(rating),1) AS avg_rating, COUNT(*) AS total_reviews
-    FROM ratings
+    SELECT 
+    ROUND(AVG(rating),1) AS avg_rating, 
+    COUNT(*) AS total_reviews
+    FROM ratings WHERE is_visible = 1
 ");
 
 if ($row = mysqli_fetch_assoc($result)) {
@@ -136,7 +138,6 @@ if ($row = mysqli_fetch_assoc($result)) {
         .feature:hover {
             transform: translateY(-6px);
         }
-
         .feature i {
             font-size: 32px;
             color: #facc15;

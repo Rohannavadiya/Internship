@@ -21,11 +21,12 @@ SELECT
     u.full_name AS user_name,
     d.full_name AS driver_name,
     b.pickup_location,
-    b.drop_location
-FROM ratings r
-JOIN users u ON u.id = r.user_id
-JOIN drivers d ON d.id = r.driver_id
-JOIN bookings b ON b.id = r.booking_id
+    b.drop_location,
+    r.is_visible
+FROM ratings r,users u,drivers d,bookings b
+WHERE u.id = r.user_id
+AND d.id = r.driver_id
+AND b.id = r.booking_id
 ORDER BY r.created_at DESC
 ";
 
@@ -228,13 +229,20 @@ $result = mysqli_query($link, $sql);
         <div class="main">
 
             <div class="topbar">
-                <h2>User <span>Ratings</span></h2>
+                <h2>Welcome, <span>Admin</span></h2>
                 <small style="color:#6b7280;">CabRide • Admin Panel</small>
             </div>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-bottom:20px;">
                 <?php
                 // 🔹 Overall average rating
-                $avgSql = "SELECT ROUND(AVG(rating), 2) AS avg_rating, COUNT(*) AS total_ratings FROM ratings";
+                $avgSql = "
+                            SELECT 
+                                ROUND(AVG(rating), 2) AS avg_rating,
+                                COUNT(*) AS total_ratings
+                            FROM ratings
+                            WHERE is_visible = 1
+                            ";
+
                 $avgResult = mysqli_query($link, $avgSql);
                 $avgRow = mysqli_fetch_assoc($avgResult);
 
@@ -266,6 +274,8 @@ $result = mysqli_query($link, $sql);
                             <th>Ride</th>
                             <th>Rating</th>
                             <th>Date</th>
+                            <th>Visibility</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -287,6 +297,26 @@ $result = mysqli_query($link, $sql);
                                     </td>
                                     <td class="stars"><?= $stars; ?></td>
                                     <td><?= date("d M Y", strtotime($created_at)); ?></td>
+                                    <td>
+                                        <?= $is_visible ? 'Visible' : 'Hidden'; ?>
+                                    </td>
+
+                                    <td>
+                                        <?php if ($is_visible) { ?>
+                                            <a href="submit/toggle_rating.php?id=<?= $id; ?>&action=hide"
+                                                onclick="return confirm('Hide this rating?')"
+                                                style="color:#b91c1c;font-weight:700;">
+                                                🚫 Hide
+                                            </a>
+                                        <?php } else { ?>
+                                            <a href="submit/toggle_rating.php?id=<?= $id; ?>&action=show"
+                                                onclick="return confirm('Show this rating?')"
+                                                style="color:#047857;font-weight:700;">
+                                                👁 Show
+                                            </a>
+                                        <?php } ?>
+                                    </td>
+
                                 </tr>
                             <?php }
                         } else { ?>

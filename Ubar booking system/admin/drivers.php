@@ -343,7 +343,7 @@ $result = mysqli_query($link, $sql);
                             <th>Email</th>
                             <th>Mobile</th>
                             <th>License</th>
-                            <th>Vehicle</th>
+                            <!-- <th>Vehicle</th> -->
                             <th>Availability</th>
                             <th>Status</th>
                             <th>Joined</th>
@@ -364,7 +364,7 @@ $result = mysqli_query($link, $sql);
                                 <td><?= $email; ?></td>
                                 <td><?= $mobile; ?></td>
                                 <td><?= $license_number; ?></td>
-                                <td><?= $vehicle_type; ?></td>
+                                <!-- <td><?= $vehicle_type; ?></td> -->
                                 <td class="<?= $availability; ?>">
                                     <?= $availability; ?>
                                 </td>

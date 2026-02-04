@@ -242,6 +242,35 @@ $result = mysqli_query($link, "
             <!-- 🔴 ONLY THIS CARD CONTENT IS DIFFERENT -->
             <div class="card">
                 <h2>Manage <span style="color:#facc15">Rides</span></h2>
+                <div style="display:flex; gap:10px; margin:15px 0;">
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="🔍 Search anything..."
+                        style="
+            flex:1;
+            padding:10px 14px;
+            border-radius:12px;
+            border:1px solid #e5e7eb;
+            font-size:14px;
+        "
+                        onkeyup="searchTable()">
+
+                    <button
+                        onclick="clearSearch()"
+                        style="
+            padding:10px 14px;
+            border-radius:12px;
+            border:none;
+            background:#ef4444;
+            color:#fff;
+            font-weight:700;
+            cursor:pointer;
+        ">
+                        ❌ Clear
+                    </button>
+                </div>
+
 
                 <table>
                     <thead>
@@ -259,21 +288,23 @@ $result = mysqli_query($link, "
                     </thead>
                     <tbody>
                         <?php $i = 1;
-                        while ($row = mysqli_fetch_assoc($result)) { ?>
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            extract($row);
+                        ?>
                             <tr>
                                 <td><?= $i++; ?></td>
-                                <td><?= htmlspecialchars($row['user_name']); ?></td>
-                                <td><?= $row['driver_name'] ? htmlspecialchars($row['driver_name']) : "<em>Not Assigned</em>"; ?></td>
-                                <td><?= htmlspecialchars($row['pickup_location']); ?></td>
-                                <td><?= htmlspecialchars($row['drop_location']); ?></td>
-                                <td><?= $row['distance_km']; ?> km</td>
-                                <td>₹<?= $row['fare']; ?></td>
+                                <td><?= $user_name; ?></td>
+                                <td><?= $driver_name ? $driver_name : "<em>Not Assigned</em>"; ?></td>
+                                <td><?= $pickup_location; ?></td>
+                                <td><?= $drop_location; ?></td>
+                                <td><?= $distance_km; ?> km</td>
+                                <td>₹<?= $fare; ?></td>
                                 <td>
-                                    <span class="badge <?= $row['status']; ?>">
-                                        <?= ucfirst($row['status']); ?>
+                                    <span class="badge <?= $status; ?>">
+                                        <?= $status; ?>
                                     </span>
                                 </td>
-                                <td><?= date("d M Y h:i A", strtotime($row['booking_time'])); ?></td>
+                                <td><?= date("d M Y h:i A", strtotime($booking_time)); ?></td>
                             </tr>
                         <?php } ?>
                     </tbody>
@@ -283,5 +314,23 @@ $result = mysqli_query($link, "
         </div>
     </div>
 </body>
+<script>
+    function searchTable() {
+        const input = document.getElementById("searchInput").value.toLowerCase();
+        const rows = document.querySelectorAll("table tbody tr");
+
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            row.style.display = text.includes(input) ? "" : "none";
+        });
+    }
+
+    function clearSearch() {
+        const input = document.getElementById("searchInput");
+        input.value = "";
+        searchTable();
+    }
+</script>
+
 
 </html>
