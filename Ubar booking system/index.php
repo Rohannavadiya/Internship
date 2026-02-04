@@ -1,3 +1,20 @@
+<?php
+include("config/db.php");
+
+$avg_rating = 0;
+$total_reviews = 0;
+
+$result = mysqli_query($link, "
+    SELECT ROUND(AVG(rating),1) AS avg_rating, COUNT(*) AS total_reviews
+    FROM ratings
+");
+
+if ($row = mysqli_fetch_assoc($result)) {
+    $avg_rating = $row['avg_rating'] ?? 0;
+    $total_reviews = $row['total_reviews'] ?? 0;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -246,6 +263,24 @@
             <h3>Live Tracking</h3>
             <p>Track your cab in real time.</p>
         </div>
+        <div class="feature">
+            <i class="fa fa-star"></i>
+
+            <h3><?= $avg_rating ?>/5 Rating</h3>
+
+            <p>
+                Rated by <?= $total_reviews ?> happy riders
+            </p>
+
+            <div style="font-size:18px; color:#facc15; margin-top:6px;">
+                <?php
+                for ($i = 1; $i <= 5; $i++) {
+                    echo $i <= round($avg_rating) ? "★" : "☆";
+                }
+                ?>
+            </div>
+        </div>
+
     </section>
 
     <!-- CTA -->
