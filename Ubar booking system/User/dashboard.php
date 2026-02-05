@@ -348,9 +348,19 @@ $user_name = $_SESSION['user_name'];
                         $row = mysqli_fetch_assoc($result);
                         extract($row);
                         echo $Total_Rides;
+
+                        $sql = "
+                                SELECT COUNT(*) AS week_total 
+                                FROM bookings 
+                                WHERE user_id = $user_id 
+                                AND YEARWEEK(booking_time,1) = YEARWEEK(CURDATE(),1)
+                                ";
+                        $result = mysqli_query($link, $sql) or die(mysqli_errno($link));
+                        $row = mysqli_fetch_assoc($result);
+                        extract($row);
                         ?>
                     </div>
-                    <small>+2 this week</small>
+                    <small>+<?= $week_total; ?> this week</small>
                 </div>
 
                 <div class="card">
@@ -365,7 +375,12 @@ $user_name = $_SESSION['user_name'];
                         echo $Total_Rides;
                         ?>
                     </div>
-                    <small>Great job ✅</small>
+                    <?php if ($Total_Rides == 0) { ?>
+                        <small>Book a ride ✅</small>
+                    <?php } else {
+                    ?>
+                        <small>Great job ✅</small>
+                    <?php } ?>
                 </div>
 
                 <div class="card">

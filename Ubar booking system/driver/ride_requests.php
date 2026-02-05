@@ -287,7 +287,7 @@ $result = mysqli_query($link, $sql);
                 <h2>Welcome Back, <span><?= $driver_name; ?></span></h2>
                 <small style="color:#6b7280;">CabRide • Driver Panel</small>
             </div>
-
+            <?= $msg; ?>
             <div class="section">
                 <h3>📥 New Booking Requests</h3>
 
