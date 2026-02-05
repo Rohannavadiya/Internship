@@ -55,7 +55,7 @@ if ($row = mysqli_fetch_assoc($result)) {
         }
 
         .logo {
-            font-size: 24px;
+            font-size: 25px;
             font-weight: 700;
             color: #facc15;
         }
@@ -138,6 +138,7 @@ if ($row = mysqli_fetch_assoc($result)) {
         .feature:hover {
             transform: translateY(-6px);
         }
+
         .feature i {
             font-size: 32px;
             color: #facc15;
@@ -220,12 +221,13 @@ if ($row = mysqli_fetch_assoc($result)) {
         <div class="logo">CabRide</div>
         <div class="nav-links">
             <a href="index.php">Home</a>
-            <a href="Auth/about.php">About</a>
-            <a href="Auth/services.php">Services</a>
-            <a href="Auth/login.php">Login</a>
-            <a href="Auth/admin_login.php" class="admin-link">Admin</a>
+            <a href="auth/about.php">About</a>
+            <a href="auth/services.php">Services</a>
+            <a href="auth/login.php">Login</a>
+            <a href="auth/admin_login.php" class="admin-link">Admin</a>
         </div>
     </div>
+
 
     <!-- Hero -->
     <section class="hero">
@@ -295,7 +297,6 @@ if ($row = mysqli_fetch_assoc($result)) {
     <div class="footer">
         © 2026 Rohan Navadiya. All rights reserved.
     </div>
-
 </body>
 
 </html>
