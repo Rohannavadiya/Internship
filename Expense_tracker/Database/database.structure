@@ -1,0 +1,73 @@
+┌─────────────────────────────────────────────────────────────────┐
+│                        DATABASE: Expense Tracking               │
+└─────────────────────────────────────────────────────────────────┘
+							 │
+                             │
+┌─────────────────────────────────────────────────────────────────┐
+│                          USERS                                  │
+├─────────────────────────────────────────────────────────────────┤
+│ PK │ id            INT(11)      NOT NULL AUTO_INCREMENT         │
+│    │ name          VARCHAR(100) NOT NULL                        │
+│    │ email         VARCHAR(100) NOT NULL UNIQUE                 │
+│    │ password      VARCHAR(255) NOT NULL                        │
+│    │ role          ENUM('user','admin') DEFAULT 'user'          │
+│    │ created_at    TIMESTAMP    DEFAULT CURRENT_TIMESTAMP       │
+└────┴────────────────────────────────────────────────────────────┘
+        │
+        │ (references account_num in expenses/income tables)
+        │
+        ▼
+        
+┌─────────────────────────────────────────────────────────────────┐
+│                      MASTER_ACCOUNT                             │
+├─────────────────────────────────────────────────────────────────┤
+│ PK │ id                 INT(11)      NOT NULL AUTO_INCREMENT    │
+│    │ acc_name           VARCHAR(100) NOT NULL                   │
+│    │ acc_group          VARCHAR(50)  DEFAULT NULL               │
+│    │ opening_balance    DECIMAL(10,2) DEFAULT 0.00              │
+│    │ address1           VARCHAR(255) DEFAULT NULL               │
+│    │ address2           VARCHAR(255) DEFAULT NULL               │
+│    │ city               VARCHAR(50)  DEFAULT NULL               │
+│    │ pincode            VARCHAR(10)  DEFAULT NULL               │
+│    │ state              VARCHAR(50)  DEFAULT NULL               │
+│    │ state_code         VARCHAR(10)  DEFAULT NULL               │
+│    │ mobile_number      VARCHAR(15)  DEFAULT NULL               │
+│    │ phone_number       VARCHAR(15)  DEFAULT NULL               │
+│    │ email              VARCHAR(100) DEFAULT NULL               │
+│    │ bank_name          VARCHAR(100) DEFAULT NULL               │
+│    │ bank_account_number VARCHAR(50) DEFAULT NULL               │
+│    │ bank_ifsc          VARCHAR(20)  DEFAULT NULL               │
+│    │ bank_branch        VARCHAR(100) DEFAULT NULL               │
+│    │ registry_number    VARCHAR(50)  DEFAULT NULL               │
+│    │ dl_number          VARCHAR(50)  DEFAULT NULL               │
+│    │ credit_limit       DECIMAL(15,2) DEFAULT 0.00              │
+│    │ credit_day         INT(11)      DEFAULT 0                  │
+│    │ bill_limit         DECIMAL(15,2) DEFAULT 0.00              │
+│    │ audit              VARCHAR(255) DEFAULT NULL               │
+│    │ remark             VARCHAR(255) DEFAULT NULL               │
+│    │ created_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP     │
+│    │ del                INT(1)       DEFAULT 1                  │
+└────┴────────────────────────────────────────────────────────────┘
+        │
+        │ (account_num references master accounts)
+        │
+        ├─────────────────────────────────────────┐
+        ▼                                         ▼
+┌───────────────────────────────────┐  ┌───────────────────────────────────┐
+│           INCOME                  │  │           EXPENSES                │
+├───────────────────────────────────┤  ├───────────────────────────────────┤
+│ PK │ income_id      INT(11)       │  │ PK │ expense_id     INT(11)       │
+│    │ income_date    DATE          │  │    │ expense_date   DATE          │
+│    │ account_num    BIGINT(20)    │  │    │ account_num    BIGINT(20)    │
+│    │ amount         DECIMAL(10,2) │  │    │ amount         DECIMAL(10,2) │
+│    │ source         VARCHAR(50)   │  │    │ source         VARCHAR(50)   │
+│    │ category       VARCHAR(50)   │  │    │ category       VARCHAR(50)   │
+│    │ payment_method VARCHAR(50)   │  │    │ payment_method VARCHAR(50)   │
+│    │ received_from  VARCHAR(100)  │  │    │ paid_to        VARCHAR(100)  │
+│    │ description    VARCHAR(255)  │  │    │ expense_type   VARCHAR(50)   │
+│    │ cheqe_num      VARCHAR(100)  │  │    │ description    VARCHAR(255)  │
+│    │ created_at     TIMESTAMP     │  │    │ cheqe_num      VARCHAR(100)  │
+│    │ del            TINYINT(1)    │  │    │ created_at     TIMESTAMP     │
+│    │                DEFAULT 1     │  │    │ del            TINYINT(1)    │
+│	 │								│  │	│			     DEFAULT 1     │
+└───────────────────────────────────┘  └───────────────────────────────────┘
